@@ -247,8 +247,7 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
     outline: none;
     font-family: Helvetica, Arial, sans-serif;
   }
-  .desktop-frow { display: none; } /* hide table filter row */
-  .mobile-filters { display: flex; overflow-x: auto; } /* show mobile filter bar */
+  .mobile-filters { display: flex; overflow-x: auto; } /* show mobile filter bar on small screens */
 
   /* special screenings mobile */
   .venue-hdr { padding: 12px 14px; }
@@ -316,7 +315,7 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
           <th class="c-kw">Keywords</th>
           <th class="c-st">Status</th>
         </tr>
-        <tr class="frow desktop-frow">
+        <tr class="frow">
           <td class="c-pick"></td><td class="c-mypick"></td><td class="c-rel"></td>
           <td class="c-title"></td><td class="c-cast"></td><td class="c-dir"></td><td class="c-rt"></td>
           <td class="c-cntry"><select id="fCountry" onchange="syncFilter('fCountry','fCountryM');render()"><option value="">All</option></select></td>
