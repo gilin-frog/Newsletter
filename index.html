@@ -225,9 +225,10 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
   .card-badges { display: flex; gap: 6px; align-items: center; margin-top: 8px; padding-top: 8px; border-top: .5px solid var(--border); }
   .week-src-card { font-size: 10px; color: var(--text3); font-style: italic; margin-left: auto; }
 
-  /* mobile filter bar — horizontal scroll selects */
+  /* mobile filter bar — hidden on desktop, shown on mobile */
   .mobile-filters {
-    display: flex;
+    display: none;
+  }
     gap: 6px;
     padding: 8px 16px;
     background: var(--bg2);
@@ -247,6 +248,7 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
     font-family: Helvetica, Arial, sans-serif;
   }
   .desktop-frow { display: none; } /* hide table filter row */
+  .mobile-filters { display: flex; overflow-x: auto; } /* show mobile filter bar */
 
   /* special screenings mobile */
   .venue-hdr { padding: 12px 14px; }
