@@ -142,6 +142,124 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
 .fg-rt { color:var(--text2); text-align:right; padding-right:8px!important; }
 .fg-dates { color:var(--text2); }
 .fest-placeholder { padding:48px 36px; text-align:center; color:var(--text3); font-size:14px; line-height:1.8; }
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — tablet (≤900px)
+══════════════════════════════════════════ */
+@media (max-width: 900px) {
+  body { padding: 0 0 40px; font-size: 14px; }
+  .container { border-radius: 0; border-left: none; border-right: none; box-shadow: none; }
+  .mast { padding: 24px 20px 0; }
+  .mast-ko { font-size: 26px; }
+  .mast-note { font-size: 13px; max-width: 100%; }
+  .mast-right { display: none; } /* hide issue/date on small screens */
+  .mtab { font-size: 12px; padding: 10px 14px; }
+  .arch { padding: 0 20px; }
+  .sbar { padding: 12px 20px; gap: 6px; }
+  .sbar input { font-size: 13px; }
+  .twrap { padding: 0 20px 4px; }
+  .sp-wrap { padding: 16px 20px 24px; }
+  .foot { padding: 10px 20px 16px; font-size: 11px; }
+
+  /* hide less important columns on tablet */
+  .c-cast, .c-kw { display: none; }
+  thead tr.frow td.c-cast,
+  thead tr.frow td.c-kw { display: none; }
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — mobile (≤640px)
+   Table rows become stacked cards
+══════════════════════════════════════════ */
+@media (max-width: 640px) {
+  body { padding: 0 0 32px; }
+  .mast { padding: 20px 16px 0; }
+  .mast-ko { font-size: 22px; }
+  .mast-note { font-size: 12px; }
+  .mtab { font-size: 11px; padding: 9px 11px; letter-spacing: 0; }
+  .mtab-cnt { display: none; }
+  .arch { padding: 0 16px; }
+  .atab { font-size: 11px; padding: 7px 10px; }
+  .sbar { padding: 10px 16px; flex-direction: column; align-items: stretch; }
+  .sbar input { min-width: unset; width: 100%; }
+  .scope-lbl { display: none; }
+  .twrap { padding: 0; overflow-x: unset; }
+  .foot { padding: 10px 16px 14px; flex-direction: column; align-items: flex-start; gap: 6px; }
+
+  /* ── CARD MODE: hide the real table, show cards instead ── */
+  table { display: none; }
+  .nores { padding: 28px 16px; }
+
+  /* cards container injected by JS */
+  .card-list { padding: 8px 16px 4px; }
+  .film-card {
+    background: var(--bg);
+    border: .5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .film-card.epick    { background: #fffdf4; border-color: #e8d98a; }
+  .film-card.mpick    { background: #f0f7ff; border-color: #aecef5; }
+  .film-card.bothpick { background: #f5fbf0; border-color: #9dd6b0; }
+
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+  .card-title-wrap { flex: 1; min-width: 0; }
+  .card-title-wrap .tm { font-size: 15px; line-height: 1.3; }
+  .card-title-wrap .ts { font-size: 12px; margin-top: 3px; }
+  .card-actions { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
+  .card-mypick { font-size: 22px; cursor: pointer; line-height: 1; user-select: none; }
+  .card-mypick.on { color: #2d7dd2; }
+  .card-mypick.off { color: var(--border2); }
+
+  .card-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--text2); margin-bottom: 8px; }
+  .card-meta-item { display: flex; flex-direction: column; }
+  .card-meta-label { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-bottom: 1px; }
+
+  .card-dir { font-size: 12px; margin-bottom: 6px; }
+  .card-dir .den { font-weight: 600; }
+  .card-dir .dko { color: var(--text2); font-family: 'Noto Serif KR', serif; font-size: 11px; }
+
+  .card-kw { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 6px; }
+  .card-badges { display: flex; gap: 6px; align-items: center; margin-top: 8px; padding-top: 8px; border-top: .5px solid var(--border); }
+  .week-src-card { font-size: 10px; color: var(--text3); font-style: italic; margin-left: auto; }
+
+  /* mobile filter bar — horizontal scroll selects */
+  .mobile-filters {
+    display: flex;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--bg2);
+    border-bottom: .5px solid var(--border);
+    overflow-x: auto;
+  }
+  .mobile-filters select {
+    font-size: 12px;
+    padding: 5px 8px;
+    border: .5px solid var(--border2);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    white-space: nowrap;
+    flex-shrink: 0;
+    outline: none;
+    font-family: Helvetica, Arial, sans-serif;
+  }
+  .desktop-frow { display: none; } /* hide table filter row */
+
+  /* special screenings mobile */
+  .venue-hdr { padding: 12px 14px; }
+  .venue-name-ko { font-size: 14px; }
+  .prog-hdr { padding: 9px 14px 9px 28px; }
+  .prog-name { font-size: 13px; }
+  .prog-films { padding: 0 14px 12px 28px; }
+  .film-grid-hdr, .film-grid-row { grid-template-columns: minmax(0,2fr) minmax(0,1.5fr) minmax(0,1fr); }
+  .film-grid-hdr .fghdr:nth-child(4),
+  .film-grid-hdr .fghdr:nth-child(5),
+  .film-grid-row .fg-cell:nth-child(4),
+  .film-grid-row .fg-cell:nth-child(5) { display: none; }
+}
 </style>
 </head>
 <body>
@@ -161,8 +279,8 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
   <div class="mast-tabs">
     <div class="mtab on" id="tab-r" onclick="sw('r')">이번 주 개봉 <span class="mtab-cnt" id="cnt-r">0</span></div>
     <div class="mtab"    id="tab-s" onclick="sw('s')">특별 상영 <span class="mtab-cnt" id="cnt-s">0</span></div>
-    <div class="mtab"    id="tab-m" onclick="sw('m')">내 picks ★ <span class="mtab-cnt" id="cnt-m">0</span></div>
     <div class="mtab"    id="tab-f" onclick="sw('f')">영화제 <span class="mtab-cnt" id="cnt-f">0</span></div>
+    <div class="mtab"    id="tab-m" onclick="sw('m')">내 picks ★ <span class="mtab-cnt" id="cnt-m">0</span></div>
   </div>
 </div>
 
@@ -172,6 +290,13 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
     <input id="srch" placeholder="Search across ALL weeks — title, director, cast, country, keywords…" oninput="render()">
     <span class="scope-lbl" id="scopeLabel"></span>
     <button class="cbtn cbtn-g" onclick="exportXL()">↓ Excel</button>
+  </div>
+  <!-- mobile-only filter bar -->
+  <div class="mobile-filters" id="mobileFilters">
+    <select id="fCountryM" onchange="syncFilter('fCountry','fCountryM');render()"><option value="">All countries</option></select>
+    <select id="fTypeM"    onchange="syncFilter('fType','fTypeM');render()"><option value="">All types</option></select>
+    <select id="fKeywordM" onchange="syncFilter('fKeyword','fKeywordM');render()"><option value="">All keywords</option></select>
+    <select id="fStatusM"  onchange="syncFilter('fStatus','fStatusM');render()"><option value="">All</option><option value="new">New</option><option value="re">Re-release</option></select>
   </div>
   <div class="twrap">
     <table>
@@ -189,17 +314,18 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
           <th class="c-kw">Keywords</th>
           <th class="c-st">Status</th>
         </tr>
-        <tr class="frow">
+        <tr class="frow desktop-frow">
           <td class="c-pick"></td><td class="c-mypick"></td><td class="c-rel"></td>
           <td class="c-title"></td><td class="c-cast"></td><td class="c-dir"></td><td class="c-rt"></td>
-          <td class="c-cntry"><select id="fCountry" onchange="render()"><option value="">All</option></select></td>
-          <td class="c-type"><select id="fType" onchange="render()"><option value="">All</option></select></td>
-          <td class="c-kw"><select id="fKeyword" onchange="render()"><option value="">All keywords</option></select></td>
-          <td class="c-st"><select id="fStatus" onchange="render()"><option value="">All</option><option value="new">New</option><option value="re">Re-release</option></select></td>
+          <td class="c-cntry"><select id="fCountry" onchange="syncFilter('fCountry','fCountryM');render()"><option value="">All</option></select></td>
+          <td class="c-type"><select id="fType" onchange="syncFilter('fType','fTypeM');render()"><option value="">All</option></select></td>
+          <td class="c-kw"><select id="fKeyword" onchange="syncFilter('fKeyword','fKeywordM');render()"><option value="">— All keywords —</option></select></td>
+          <td class="c-st"><select id="fStatus" onchange="syncFilter('fStatus','fStatusM');render()"><option value="">All</option><option value="new">New</option><option value="re">Re-release</option></select></td>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
     </table>
+    <div class="card-list" id="cardList"></div>
     <div class="nores" id="nores" style="display:none;">No films match your filters.</div>
   </div>
   <div class="foot">
@@ -227,6 +353,7 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
       </thead>
       <tbody id="mybody"></tbody>
     </table>
+    <div class="card-list" id="mycardList"></div>
     <div class="mypicks-empty" id="myEmpty" style="display:none;">
       아직 선택한 영화가 없습니다.<br>
       <span style="font-size:13px;color:var(--text3);">Click the ☆ next to any film to save it here.</span>
@@ -433,14 +560,25 @@ function allMovies(){
   return all;
 }
 
+function isMobile(){ return window.innerWidth <= 640; }
+
+function syncFilter(masterId, mirrorId){
+  var master = document.getElementById(masterId);
+  var mirror = document.getElementById(mirrorId);
+  if(master && mirror) mirror.value = master.value;
+}
+
 function buildFilters(){
   var pool=allMovies();
   var cs=[...new Set(pool.map(function(m){return m.country;}).filter(Boolean))].sort();
   var ts=[...new Set(pool.map(function(m){return m.type;}).filter(Boolean))].sort();
   var ks=[...new Set(pool.reduce(function(a,m){return a.concat(m.keywords);},[])) ].sort(function(a,b){return a.localeCompare(b,'ko');});
-  document.getElementById('fCountry').innerHTML='<option value="">All</option>'+cs.map(function(c){return'<option value="'+c+'">'+c+'</option>';}).join('');
-  document.getElementById('fType').innerHTML='<option value="">All</option>'+ts.map(function(t){return'<option value="'+t+'">'+t+'</option>';}).join('');
-  document.getElementById('fKeyword').innerHTML='<option value="">All keywords</option>'+ks.map(function(k){return'<option value="'+k+'">'+k+'</option>';}).join('');
+  var cOpts='<option value="">All</option>'+cs.map(function(c){return'<option value="'+c+'">'+c+'</option>';}).join('');
+  var tOpts='<option value="">All</option>'+ts.map(function(t){return'<option value="'+t+'">'+t+'</option>';}).join('');
+  var kOpts='<option value="">— All keywords —</option>'+ks.map(function(k){return'<option value="'+k+'">'+k+'</option>';}).join('');
+  ['fCountry','fCountryM'].forEach(function(id){ var el=document.getElementById(id); if(el) el.innerHTML=cOpts; });
+  ['fType','fTypeM'].forEach(function(id){ var el=document.getElementById(id); if(el) el.innerHTML=tOpts; });
+  ['fKeyword','fKeywordM'].forEach(function(id){ var el=document.getElementById(id); if(el) el.innerHTML=kOpts; });
 }
 
 function getFilt(){
@@ -479,13 +617,43 @@ function filmRow(m, wk, idx, searching){
     +'<td class="c-rel dtcell">'+m.date+(searching?'<div class="week-src">'+wLabel(wk)+'</div>':'')+'</td>'
     +'<td class="c-title">'+titleHtml+'</td>'
     +'<td class="c-cast" style="font-size:13px;color:var(--text2);">'+m.cast+'</td>'
-    +'<td class="c-dir"><div class="den">'+m.dirEn+'</div><div class="dko" id="dk-'+rk+'">'+dk+'</div><div class="dedit" onclick="editDk(\''+rk+'\')">수정</div></td>'
+    +'<td class="c-dir"><div class="den">'+m.dirEn+'</div><div class="dko" id="dk-'+rk+'">'+dk+'</div></td>'
     +'<td class="c-rt" style="font-size:13px;color:var(--text2);">'+rt+'</td>'
     +'<td class="c-cntry cntry-cell">'+m.country+'</td>'
     +'<td class="c-type"><span class="tpill">'+m.type+'</span></td>'
     +'<td class="c-kw"><div class="kwrap">'+m.keywords.map(function(k){return'<span class="kpill">'+k+'</span>';}).join('')+'</div></td>'
     +'<td class="c-st"><span class="badge '+(m.status==='new'?'bnew':'bre')+'">'+(m.status==='new'?'NEW':'RE')+'</span></td>'
     +'</tr>';
+}
+
+function filmCard(m, wk, idx, searching){
+  var rk=wk+'-'+idx;
+  var isMy=!!myPicks[rk];
+  var rc=m.pick&&isMy?'bothpick':m.pick?'epick':isMy?'mpick':'';
+  var rt=m.runtime>0?m.runtime+'분':'—';
+  var titleInner=m.link
+    ?'<a class="title-link" href="'+m.link+'" target="_blank" rel="noopener"><div class="tm">'+m.title+' <span class="title-link-icon">↗</span></div><div class="ts">'+m.titleKo+'</div></a>'
+    :'<div class="tm">'+m.title+'</div><div class="ts">'+m.titleKo+'</div>';
+  return '<div class="film-card '+rc+'">'
+    +'<div class="card-top">'
+    +'<div class="card-title-wrap">'+titleInner+'</div>'
+    +'<div class="card-actions">'
+    +(m.pick?'<span class="pbadge">PICK</span>':'')
+    +'<span class="card-mypick '+(isMy?'on':'off')+'" onclick="toggleMy(\''+rk+'\')">'+(isMy?'★':'☆')+'</span>'
+    +'</div></div>'
+    +'<div class="card-dir"><span class="den">'+m.dirEn+'</span>'+(m.dirKo?' <span class="dko">/ '+m.dirKo+'</span>':'')+'</div>'
+    +'<div class="card-meta">'
+    +'<div class="card-meta-item"><span class="card-meta-label">Release</span>'+m.date+'</div>'
+    +'<div class="card-meta-item"><span class="card-meta-label">Country</span>'+m.country+'</div>'
+    +'<div class="card-meta-item"><span class="card-meta-label">Runtime</span>'+rt+'</div>'
+    +'<div class="card-meta-item"><span class="card-meta-label">Type</span>'+m.type+'</div>'
+    +'</div>'
+    +'<div class="card-kw">'+m.keywords.map(function(k){return'<span class="kpill">'+k+'</span>';}).join('')+'</div>'
+    +'<div class="card-badges">'
+    +'<span class="badge '+(m.status==='new'?'bnew':'bre')+'">'+(m.status==='new'?'NEW':'RE')+'</span>'
+    +(searching?'<span class="week-src-card">'+wLabel(wk)+'</span>':'')
+    +'</div>'
+    +'</div>';
 }
 
 function render(){
@@ -497,12 +665,26 @@ function render(){
     :'Showing <span>'+wLabel(activeWeek)+'</span>';
   document.getElementById('cnt-r').textContent=WEEKS[activeWeek].movies.length;
   document.getElementById('rcnt').textContent=data.length+' of '+(searching?allMovies().length+' total films':WEEKS[activeWeek].movies.length+' titles this week');
-  if(!data.length){document.getElementById('tbody').innerHTML='';document.getElementById('nores').style.display='block';return;}
-  document.getElementById('nores').style.display='none';
-  document.getElementById('tbody').innerHTML=data.map(function(m){
-    var wk=m._week||activeWeek, idx=m._idx!==undefined?m._idx:WEEKS[activeWeek].movies.indexOf(m);
-    return filmRow(m, wk, idx, searching);
-  }).join('');
+  var noRes=document.getElementById('nores');
+  if(!data.length){
+    document.getElementById('tbody').innerHTML='';
+    document.getElementById('cardList').innerHTML='';
+    noRes.style.display='block'; return;
+  }
+  noRes.style.display='none';
+  if(isMobile()){
+    document.getElementById('tbody').innerHTML='';
+    document.getElementById('cardList').innerHTML=data.map(function(m){
+      var wk=m._week||activeWeek, idx=m._idx!==undefined?m._idx:WEEKS[activeWeek].movies.indexOf(m);
+      return filmCard(m,wk,idx,searching);
+    }).join('');
+  } else {
+    document.getElementById('cardList').innerHTML='';
+    document.getElementById('tbody').innerHTML=data.map(function(m){
+      var wk=m._week||activeWeek, idx=m._idx!==undefined?m._idx:WEEKS[activeWeek].movies.indexOf(m);
+      return filmRow(m,wk,idx,searching);
+    }).join('');
+  }
 }
 
 function toggleMy(rk){ myPicks[rk]=!myPicks[rk]; if(!myPicks[rk])delete myPicks[rk]; updateMyTab(); render(); }
@@ -511,13 +693,24 @@ function updateMyTab(){ document.getElementById('cnt-m').textContent=Object.keys
 function renderMyPicks(){
   var keys=Object.keys(myPicks);
   document.getElementById('mycnt').textContent=keys.length+' film'+(keys.length!==1?'s':'')+' saved';
-  if(!keys.length){document.getElementById('mybody').innerHTML='';document.getElementById('myEmpty').style.display='block';return;}
+  if(!keys.length){
+    document.getElementById('mybody').innerHTML='';
+    var cl=document.getElementById('mycardList'); if(cl) cl.innerHTML='';
+    document.getElementById('myEmpty').style.display='block'; return;
+  }
   document.getElementById('myEmpty').style.display='none';
-  document.getElementById('mybody').innerHTML=keys.map(function(rk){
+  var rows=keys.map(function(rk){
     var p=rk.split('-'),wk=p[0]+'-'+p[1],idx=parseInt(p[2]);
     var m=WEEKS[wk]&&WEEKS[wk].movies[idx]; if(!m)return'';
-    return filmRow(m, wk, idx, true);
+    return isMobile()?filmCard(m,wk,idx,true):filmRow(m,wk,idx,true);
   }).join('');
+  if(isMobile()){
+    document.getElementById('mybody').innerHTML='';
+    var cl=document.getElementById('mycardList'); if(cl) cl.innerHTML=rows;
+  } else {
+    document.getElementById('mybody').innerHTML=rows;
+    var cl=document.getElementById('mycardList'); if(cl) cl.innerHTML='';
+  }
 }
 
 function editDk(rk){
@@ -607,8 +800,7 @@ function toggleProg(vi,pi){
   document.getElementById('pa-'+vi+'-'+pi).classList.toggle('open',SPECIAL[vi].programs[pi].open);
 }
 init();
+window.addEventListener('resize', function(){ render(); });
 </script>
 </body>
 </html>
-
-
