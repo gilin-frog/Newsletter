@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이번 주에 뭐볼까...</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#ffffff; --bg2:#f7f7f5; --bg3:#efefec;
+  --border:#e0dfd9; --border2:#d0cfc8;
+  --text:#1a1a18; --text2:#6b6b64; --text3:#a0a098;
+  --gold:#C8A84B; --gold-bg:rgba(200,168,75,.12);
+  --dark:#0D1117; --radius:8px; --radius-lg:12px;
+}
+body { font-family:Helvetica,Arial,sans-serif; background:var(--bg2); min-height:100vh; padding:24px 16px 48px; font-size:15px; }
+.container { max-width:1240px; margin:0 auto; background:var(--bg); border:.5px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; box-shadow:0 4px 32px rgba(0,0,0,.07); }
+
+/* MASTHEAD */
+.mast { background:var(--dark); padding:32px 36px 0; }
+.mast-top { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:22px; gap:20px; }
+.mast-ko { font-family:'Noto Serif KR',신명조,serif; font-size:32px; font-weight:600; color:#fff; letter-spacing:-.02em; line-height:1.2; }
+.mast-note { font-size:14px; color:rgba(255,255,255,.36); margin-top:8px; line-height:1.65; max-width:420px; }
+.mast-right { text-align:right; flex-shrink:0; }
+.mast-issue { font-size:12px; color:var(--gold); letter-spacing:.14em; text-transform:uppercase; }
+.mast-date { font-size:13px; color:rgba(255,255,255,.28); margin-top:5px; }
+.mast-tabs { display:flex; }
+.mtab { font-size:13px; padding:12px 20px; color:rgba(255,255,255,.3); cursor:pointer; border-bottom:2px solid transparent; letter-spacing:.04em; white-space:nowrap; transition:color .15s; user-select:none; }
+.mtab:hover { color:rgba(255,255,255,.65); }
+.mtab.on { color:var(--gold); border-bottom-color:var(--gold); }
+.mtab-cnt { display:inline-block; font-size:11px; background:rgba(255,255,255,.08); color:rgba(255,255,255,.32); padding:1px 6px; border-radius:10px; margin-left:5px; vertical-align:middle; }
+.mtab.on .mtab-cnt { background:var(--gold-bg); color:var(--gold); }
+
+/* ARCHIVE BAR */
+.arch { display:flex; background:var(--dark); padding:0 36px; border-bottom:1px solid rgba(255,255,255,.07); overflow-x:auto; }
+.arch::-webkit-scrollbar { height:2px; }
+.arch::-webkit-scrollbar-thumb { background:rgba(255,255,255,.12); }
+.atab { font-size:12px; padding:8px 14px; color:rgba(255,255,255,.26); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; letter-spacing:.03em; transition:color .15s; }
+.atab:hover { color:rgba(255,255,255,.55); }
+.atab.on { color:var(--gold); border-bottom-color:var(--gold); }
+
+/* SEARCH BAR */
+.sbar { display:flex; gap:8px; padding:14px 36px; background:var(--bg2); border-bottom:.5px solid var(--border); align-items:center; flex-wrap:wrap; }
+.sbar input { flex:1; min-width:220px; font-size:14px; padding:7px 12px; border:.5px solid var(--border2); border-radius:var(--radius); background:var(--bg); color:var(--text); font-family:Helvetica,Arial,sans-serif; outline:none; }
+.sbar input:focus { border-color:var(--gold); }
+.scope-lbl { font-size:12px; color:var(--text3); white-space:nowrap; }
+.scope-lbl span { color:var(--gold); font-weight:600; }
+.cbtn { font-size:13px; font-weight:600; padding:7px 16px; border:none; border-radius:var(--radius); cursor:pointer; font-family:Helvetica,Arial,sans-serif; letter-spacing:.04em; white-space:nowrap; }
+.cbtn-g { background:var(--gold); color:var(--dark); }
+.cbtn-g:hover { background:#b5953e; }
+
+/* TABLE */
+.twrap { overflow-x:auto; padding:0 36px 4px; }
+table { width:100%; border-collapse:collapse; font-size:14px; margin-top:14px; table-layout:fixed; font-family:Helvetica,Arial,sans-serif; }
+thead tr.hdr { border-bottom:1.5px solid var(--dark); }
+th { text-align:left; font-size:10px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--text3); padding:7px 6px 7px 0; white-space:nowrap; user-select:none; }
+th.sortable { cursor:pointer; }
+th.sortable:hover { color:var(--text); }
+th .si { font-style:normal; opacity:.28; margin-left:2px; }
+th.srt .si { opacity:1; color:var(--dark); }
+td { padding:11px 6px 11px 0; vertical-align:top; border-bottom:.5px solid var(--border); color:var(--text); line-height:1.45; }
+tbody tr:hover td { background:var(--bg2); }
+tbody tr.epick td    { background:#fffdf4; }
+tbody tr.mpick td    { background:#f0f7ff; }
+tbody tr.bothpick td { background:#f5fbf0; }
+tr.frow td { padding:5px 4px 5px 0; background:var(--bg2); border-bottom:1px solid var(--border2); }
+tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid var(--border2); border-radius:5px; background:var(--bg); color:var(--text); font-family:Helvetica,Arial,sans-serif; cursor:pointer; outline:none; }
+
+/* col widths */
+.c-pick   { width:5%; }
+.c-mypick { width:4%; }
+.c-rel    { width:9%; }
+.c-title  { width:16%; }
+.c-cast   { width:12%; }
+.c-dir    { width:11%; }
+.c-rt     { width:5%; text-align:right; padding-right:10px!important; }
+.c-cntry  { width:7%; }
+.c-type   { width:8%; }
+.c-kw     { width:15%; }
+.c-st     { width:8%; }
+
+.tm { font-weight:600; font-size:14px; }
+.ts { font-size:12px; color:var(--text2); margin-top:2px; font-family:'Noto Serif KR',신명조,serif; }
+.title-link { text-decoration:none; color:inherit; }
+.title-link:hover .tm { text-decoration:underline; color:var(--dark); }
+.title-link-icon { font-size:10px; color:var(--text3); margin-left:4px; vertical-align:middle; }
+.no-link { cursor:default; }
+.den { font-size:14px; }
+.dko { font-size:12px; color:var(--text2); margin-top:2px; font-family:'Noto Serif KR',신명조,serif; }
+.dedit { font-size:11px; color:var(--text3); cursor:pointer; text-decoration:underline; margin-top:2px; }
+.dedit:hover { color:var(--text2); }
+.pbadge { display:inline-block; font-size:9px; font-weight:700; padding:2px 6px; border-radius:10px; background:var(--dark); color:var(--gold); letter-spacing:.07em; }
+.mypick-btn { font-size:18px; cursor:pointer; line-height:1; display:block; text-align:center; transition:transform .15s; user-select:none; }
+.mypick-btn:hover { transform:scale(1.2); }
+.mypick-btn.on { color:#2d7dd2; }
+.mypick-btn.off { color:var(--border2); }
+.badge { display:inline-block; font-size:10px; font-weight:600; padding:2px 8px; border-radius:20px; letter-spacing:.06em; }
+.bnew { background:var(--dark); color:var(--gold); }
+.bre  { background:var(--bg2); color:var(--text2); border:.5px solid var(--border2); }
+.tpill,.kpill { font-size:11px; padding:2px 7px; border-radius:20px; border:.5px solid var(--border2); color:var(--text2); white-space:nowrap; display:inline-block; margin-bottom:2px; }
+.kwrap { display:flex; flex-wrap:wrap; gap:3px; }
+.dtcell,.cntry-cell { font-size:12px; color:var(--text2); }
+.week-src { font-size:10px; color:var(--text3); font-style:italic; margin-top:3px; }
+.nores { text-align:center; color:var(--text3); padding:36px 0; font-size:14px; }
+.foot { padding:12px 36px 20px; border-top:.5px solid var(--border); display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text3); letter-spacing:.03em; flex-wrap:wrap; gap:8px; }
+.mypicks-empty { text-align:center; color:var(--text3); padding:44px 0; font-size:14px; line-height:1.9; }
+
+/* SPECIAL SCREENINGS */
+.sp-wrap { padding:20px 36px 32px; }
+.venue-block { margin-bottom:8px; border:.5px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+.venue-hdr { display:flex; align-items:center; gap:10px; padding:14px 18px; background:var(--bg2); cursor:pointer; user-select:none; transition:background .12s; }
+.venue-hdr:hover { background:var(--bg3); }
+.venue-arrow { font-size:11px; color:var(--text3); transition:transform .2s; display:inline-block; width:14px; flex-shrink:0; }
+.venue-arrow.open { transform:rotate(90deg); }
+.venue-name-ko { font-size:15px; font-weight:600; color:var(--text); font-family:'Noto Serif KR',신명조,serif; }
+.venue-name-en { font-size:12px; color:var(--text2); margin-top:2px; }
+.venue-tag { font-size:10px; font-weight:700; padding:3px 8px; border-radius:20px; letter-spacing:.08em; margin-left:auto; white-space:nowrap; flex-shrink:0; }
+.vt-c { background:#E1F5EE; color:#085041; }
+.vt-t { background:#E6F1FB; color:#0C447C; }
+.venue-body { display:none; border-top:.5px solid var(--border); }
+.venue-body.open { display:block; }
+.prog-block { border-bottom:.5px solid var(--border); }
+.prog-block:last-child { border-bottom:none; }
+.prog-hdr { display:flex; align-items:center; gap:10px; padding:11px 18px 11px 36px; cursor:pointer; user-select:none; transition:background .12s; }
+.prog-hdr:hover { background:var(--bg2); }
+.prog-arrow { font-size:10px; color:var(--text3); transition:transform .2s; display:inline-block; width:12px; flex-shrink:0; }
+.prog-arrow.open { transform:rotate(90deg); }
+.prog-name { font-size:14px; font-weight:600; color:var(--text); font-family:'Noto Serif KR',신명조,serif; }
+.prog-dates { font-size:12px; color:var(--text2); margin-left:auto; }
+.prog-films { display:none; padding:0 18px 16px 50px; }
+.prog-films.open { display:block; }
+.film-grid-hdr { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1.5fr) minmax(0,1.2fr) 52px minmax(0,1.5fr); border-bottom:.5px solid var(--border2); margin-top:10px; }
+.film-grid-row { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1.5fr) minmax(0,1.2fr) 52px minmax(0,1.5fr); border-bottom:.5px solid var(--border); }
+.film-grid-row:last-child { border-bottom:none; }
+.fghdr { font-size:10px; font-weight:600; letter-spacing:.13em; text-transform:uppercase; color:var(--text3); padding:6px 6px 5px 0; }
+.fg-cell { font-size:12px; padding:9px 6px 9px 0; color:var(--text); }
+.fg-cell .tm { font-size:14px; } .fg-cell .ts { font-size:11px; }
+.fg-cell .den { font-size:12px; } .fg-cell .dko { font-size:11px; }
+.fg-note { color:var(--text2); font-style:italic; }
+.fg-rt { color:var(--text2); text-align:right; padding-right:8px!important; }
+.fg-dates { color:var(--text2); }
+.fest-placeholder { padding:48px 36px; text-align:center; color:var(--text3); font-size:14px; line-height:1.8; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="mast">
+  <div class="mast-top">
+    <div>
+      <div class="mast-ko">이번 주에 뭐볼까...</div>
+      <div class="mast-note">매주 월요일, 이번 주 개봉작과 서울 아트하우스 상영 일정을 정리합니다. 극장에서 좋은 영화 많이 보세요.</div>
+    </div>
+    <div class="mast-right">
+      <div class="mast-issue">Issue No. <span id="issueNo">19</span></div>
+      <div class="mast-date" id="mDate"></div>
+    </div>
+  </div>
+  <div class="mast-tabs">
+    <div class="mtab on" id="tab-r" onclick="sw('r')">이번 주 개봉 <span class="mtab-cnt" id="cnt-r">0</span></div>
+    <div class="mtab"    id="tab-s" onclick="sw('s')">특별 상영 <span class="mtab-cnt" id="cnt-s">0</span></div>
+    <div class="mtab"    id="tab-m" onclick="sw('m')">내 picks ★ <span class="mtab-cnt" id="cnt-m">0</span></div>
+    <div class="mtab"    id="tab-f" onclick="sw('f')">영화제 <span class="mtab-cnt" id="cnt-f">0</span></div>
+  </div>
+</div>
+
+<div id="v-r">
+  <div class="arch" id="archBar"></div>
+  <div class="sbar">
+    <input id="srch" placeholder="Search across ALL weeks — title, director, cast, country, keywords…" oninput="render()">
+    <span class="scope-lbl" id="scopeLabel"></span>
+    <button class="cbtn cbtn-g" onclick="exportXL()">↓ Excel</button>
+  </div>
+  <div class="twrap">
+    <table>
+      <thead>
+        <tr class="hdr">
+          <th class="c-pick">Editor</th>
+          <th class="c-mypick">Mine</th>
+          <th class="c-rel sortable" onclick="srt('date')">Release <i class="si" id="s-date">↕</i></th>
+          <th class="c-title sortable" onclick="srt('title')">Title <i class="si" id="s-title">↕</i></th>
+          <th class="c-cast">Cast</th>
+          <th class="c-dir sortable" onclick="srt('dirEn')">Director <i class="si" id="s-dirEn">↕</i></th>
+          <th class="c-rt sortable" onclick="srt('runtime')">Min <i class="si" id="s-runtime">↕</i></th>
+          <th class="c-cntry sortable" onclick="srt('country')">Country <i class="si" id="s-country">↕</i></th>
+          <th class="c-type">Type</th>
+          <th class="c-kw">Keywords</th>
+          <th class="c-st">Status</th>
+        </tr>
+        <tr class="frow">
+          <td class="c-pick"></td><td class="c-mypick"></td><td class="c-rel"></td>
+          <td class="c-title"></td><td class="c-cast"></td><td class="c-dir"></td><td class="c-rt"></td>
+          <td class="c-cntry"><select id="fCountry" onchange="render()"><option value="">All</option></select></td>
+          <td class="c-type"><select id="fType" onchange="render()"><option value="">All</option></select></td>
+          <td class="c-kw"><select id="fKeyword" onchange="render()"><option value="">All keywords</option></select></td>
+          <td class="c-st"><select id="fStatus" onchange="render()"><option value="">All</option><option value="new">New</option><option value="re">Re-release</option></select></td>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="nores" id="nores" style="display:none;">No films match your filters.</div>
+  </div>
+  <div class="foot">
+    <span id="rcnt"></span>
+    <span>Source: KOBIS 개봉스케줄 · kobis.or.kr — Updated every Monday</span>
+  </div>
+</div>
+
+<div id="v-s" style="display:none;">
+  <div class="sp-wrap" id="spContent"></div>
+</div>
+
+<div id="v-m" style="display:none;">
+  <div class="twrap">
+    <table>
+      <thead>
+        <tr class="hdr">
+          <th class="c-pick">Editor</th><th class="c-mypick">Mine</th>
+          <th class="c-rel">Release</th><th class="c-title">Title</th>
+          <th class="c-cast">Cast</th><th class="c-dir">Director</th>
+          <th class="c-rt">Min</th><th class="c-cntry">Country</th>
+          <th class="c-type">Type</th><th class="c-kw">Keywords</th>
+          <th class="c-st">Status</th>
+        </tr>
+      </thead>
+      <tbody id="mybody"></tbody>
+    </table>
+    <div class="mypicks-empty" id="myEmpty" style="display:none;">
+      아직 선택한 영화가 없습니다.<br>
+      <span style="font-size:13px;color:var(--text3);">Click the ☆ next to any film to save it here.</span>
+    </div>
+  </div>
+  <div class="foot">
+    <span id="mycnt"></span>
+    <button class="cbtn cbtn-g" onclick="exportMyXL()">↓ Export my picks</button>
+  </div>
+</div>
+
+<div id="v-f" style="display:none;">
+  <div class="fest-placeholder">영화제 섹션은 준비 중입니다.<br><span style="font-size:13px;">Film festivals section coming soon.</span></div>
+</div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   ALLOWED VALUES — do not change these lists
+   ─────────────────────────────────────────────────────────
+   TYPE (4 options only):
+     "Live Action" / "Documentary" / "Animation" / "Experimental"
+
+   KEYWORDS — pick up to 5 from this list per film:
+     가족 / 건축 / 교육 / 국가주의 / 국가폭력 / 꿈 / 노동 /
+     노인/고령화 / 농어촌 / 뉴노멀/팬데믹 / 다큐멘터리 / 덕후 /
+     도시/도시화 / 독재 / 동물 / 로드무비 / 모큐멘터리 / 모험 /
+     문학 / 미래 / 민주주의 / 범죄/폭력/테러 / 복수 / 빈곤/가난 /
+     사랑/연애/로맨스 / 사제관계 / 사회비판 / 서스펜스/미스터리 /
+     성장/청춘 / 스포츠 / 시위 / 신체 / 실험 / 실화 / 심리 /
+     아동 / 애니메이션 / 에로 / 여성 / 역사 / 연극/연기 /
+     영화에 관한 영화 / 예술/예술가 / 오디오 / 우정 / 음모 /
+     음식/술 / 음악/춤 / 이민/이주 / 인권 / 인종 /
+     인터넷/가상세계/첨단기술 / 자본주의/기업 / 자연/풍경 / 장애 /
+     재난/천재지변 / 전기/바이오 / 전쟁 / 전통문화 / 정치/저항 /
+     종교/심령 / 죽음 / 중년 / 추리/탐정 / 치유 /
+     코미디/유머/블랙코미디 / 투쟁 / 팀워크 / 판타지 / 평론 /
+     풍자 / 학교 / 혁명 / 호러/공포/고어 / 환경/생태 / 히어로 /
+     LGBTQ / SF / 4K 복원
+
+   STATUS: "new" or "re"
+
+   LINK: URL string, or "" if not yet available
+═══════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════
+   HOW TO ADD DATA FROM GOOGLE SHEETS
+   ─────────────────────────────────────────────────────────
+   Your Google Sheet columns should be in this order:
+   A: title (English)
+   B: titleKo (Korean)
+   C: dirEn (Director, original language)
+   D: dirKo (Director, Korean)
+   E: cast (comma separated)
+   F: runtime (number, 0 if unknown)
+   G: country
+   H: type  (Live Action / Documentary / Animation / Experimental)
+   I: keywords (separate with | pipe character, e.g. 역사|전쟁|사회비판)
+   J: status  (new / re)
+   K: date  (YYYY-MM-DD)
+   L: pick  (TRUE / FALSE)
+   M: link  (URL or leave blank)
+
+   When you add a new week, copy the block below and fill in each film.
+   Each film is one { } block. Separate films with a comma.
+═══════════════════════════════════════════════════════════ */
+
+var WEEKS = {
+
+  /* ── ADD NEW WEEKS AT THE TOP — copy/paste the block below ──
+  "YYYY-WXX": {
+    label: "Mon DD – Mon DD, YYYY",
+    movies: [
+      { title:"", titleKo:"", dirEn:"", dirKo:"", cast:"", runtime:0, country:"", type:"Live Action", keywords:["",""], status:"new", date:"YYYY-MM-DD", pick:false, link:"" },
+    ]
+  },
+  ────────────────────────────────────────────────────────── */
+
+  "2026-W19": {
+    label: "May 5–11, 2026",
+    movies: [
+      { title:"The Mandalorian & Grogu",  titleKo:"만달로리안과 그로구",      dirEn:"Jon Favreau",             dirKo:"존 파브로",             cast:"Pedro Pascal",                             runtime:0,   country:"USA",     type:"Live Action",   keywords:["SF","히어로","미래"],                     status:"new", date:"2026-05-07", pick:false, link:"" },
+      { title:"The Devil Wears Prada 2",  titleKo:"악마는 프라다를 입는다 2", dirEn:"Wendy Finerman",          dirKo:"웬디 피너만",            cast:"Meryl Streep, Anne Hathaway, Emily Blunt", runtime:0,   country:"USA",     type:"Live Action",   keywords:["여성","사회비판","코미디/유머/블랙코미디"], status:"new", date:"2026-05-01", pick:true,  link:"" },
+      { title:"Saltwater",                titleKo:"짝사랑 세계",              dirEn:"Nobuhiro Doi",            dirKo:"도이 노부히로",          cast:"Hirose Suzu, Sugisaki Hana",               runtime:0,   country:"Japan",   type:"Live Action",   keywords:["사랑/연애/로맨스","성장/청춘","우정"],     status:"new", date:"2026-05-07", pick:true,  link:"" },
+      { title:"5 Centimeters Per Second", titleKo:"초속 5센티미터",           dirEn:"Miki Takahiro",           dirKo:"미키 타카히로",          cast:"Micheda Shunsuke",                         runtime:0,   country:"Japan",   type:"Live Action",   keywords:["사랑/연애/로맨스","성장/청춘"],            status:"new", date:"2026-05-07", pick:false, link:"" },
+      { title:"Pina",                     titleKo:"피나",                     dirEn:"Wim Wenders",             dirKo:"빔 벤더스",              cast:"Pina Bausch dance company",                runtime:106, country:"Germany", type:"Documentary",   keywords:["음악/춤","예술/예술가","4K 복원"],         status:"re",  date:"2026-04-28", pick:true,  link:"" },
+      { title:"Ran 12.3",                 titleKo:"란 12.3",                  dirEn:"Akira Kurosawa",          dirKo:"구로사와 아키라",        cast:"Tatsuya Nakadai, Akira Terao",             runtime:162, country:"Japan",   type:"Live Action",   keywords:["역사","전쟁","4K 복원"],                  status:"re",  date:"2026-04-28", pick:true,  link:"" },
+      { title:"Sultana's Dream",          titleKo:"술타나의 꿈",              dirEn:"Isabel Herguera",         dirKo:"이사벨 에르게라",        cast:"animated",                                 runtime:80,  country:"Spain",   type:"Animation",     keywords:["여성","판타지","민주주의"],               status:"new", date:"2026-03-19", pick:true,  link:"" },
+      { title:"The Day She Returned",     titleKo:"그녀가 돌아온 날",         dirEn:"TBC",                     dirKo:"TBC",                    cast:"TBC",                                      runtime:0,   country:"Korea",   type:"Live Action",   keywords:["여성"],                                   status:"new", date:"2026-04-24", pick:false, link:"" },
+    ]
+  },
+
+  "2026-W18": {
+    label: "Apr 28 – May 4, 2026",
+    movies: [
+      { title:"Journey to Gyeongju", titleKo:"경주기행",  dirEn:"TBC",              dirKo:"TBC",    cast:"이정은, 공효진",         runtime:0, country:"Korea", type:"Live Action", keywords:["여성","복수","로드무비"],       status:"new", date:"2026-04-28", pick:true,  link:"" },
+      { title:"Salvokji",            titleKo:"살목지",    dirEn:"Lee Sang-min",     dirKo:"이상민", cast:"김혜윤, 이종원, 김준한", runtime:0, country:"Korea", type:"Live Action", keywords:["호러/공포/고어","종교/심령"],   status:"new", date:"2026-04-28", pick:false, link:"" },
+      { title:"Jjangu",              titleKo:"짱구",      dirEn:"Kang Hyung-cheol", dirKo:"강형철", cast:"안재홍",                 runtime:0, country:"Korea", type:"Live Action", keywords:["성장/청춘","코미디/유머/블랙코미디"], status:"new", date:"2026-04-22", pick:false, link:"" },
+    ]
+  },
+
+  "2026-W17": {
+    label: "Apr 20–26, 2026",
+    movies: [
+      { title:"Project Hail Mary", titleKo:"프로젝트 헤일메리", dirEn:"Phil Lord, Chris Miller", dirKo:"필 로드, 크리스 밀러", cast:"Ryan Gosling",   runtime:0, country:"USA",   type:"Live Action", keywords:["SF","미래","투쟁"],   status:"new", date:"2026-03-18", pick:true,  link:"" },
+      { title:"Blizzard",          titleKo:"폭설",               dirEn:"TBC",                    dirKo:"TBC",                  cast:"김윤석, 구교환", runtime:0, country:"Korea", type:"Live Action", keywords:["심리","서스펜스/미스터리"], status:"new", date:"2026-04-22", pick:false, link:"" },
+    ]
+  },
+
+}; /* ← END OF WEEKS */
+
+
+var SPECIAL = [
+  { venueKo:"아트하우스 모모", venueEn:"Arthouse Momo",    type:"t", open:false, programs:[
+    { name:"여성 감독 특별전", dates:"2026.04–05", open:false, films:[
+      { title:"Portrait of a Lady on Fire", titleKo:"타오르는 여인의 초상", dirEn:"Céline Sciamma",   dirKo:"셀린 시아마",    runtime:122, screenDates:"May 2026",     note:"", link:"" },
+    ]},
+  ]},
+  { venueKo:"씨네큐브",        venueEn:"Cinecube",          type:"t", open:false, programs:[
+    { name:"현재 상영작", dates:"2026.05", open:false, films:[
+      { title:"Sentimental Value", titleKo:"센티멘탈 밸류", dirEn:"Joachim Trier",    dirKo:"요아킴 트리에르", runtime:133, screenDates:"May 2026", note:"",             link:"" },
+      { title:"Flow",              titleKo:"플로우",         dirEn:"Gints Zilbalodis", dirKo:"긴츠 질발로디스", runtime:84,  screenDates:"May 2026", note:"Academy Award", link:"" },
+    ]},
+  ]},
+  { venueKo:"에무시네마",       venueEn:"Emu Cinema",        type:"c", open:false, programs:[
+    { name:"아트무비나잇 에무", dates:"2026.05", open:false, films:[
+      { title:"Jeanne Dielman", titleKo:"잔느 딜만", dirEn:"Chantal Akerman", dirKo:"샹탈 아케르만", runtime:201, screenDates:"TBC", note:"35mm", link:"" },
+    ]},
+  ]},
+  { venueKo:"인디스페이스",     venueEn:"Indie Space",       type:"c", open:true,  programs:[
+    { name:"상영 중인 작품", dates:"2026.04.28–05.13", open:true, films:[
+      { title:"Pina",                titleKo:"피나",         dirEn:"Wim Wenders",    dirKo:"빔 벤더스",       runtime:106, screenDates:"Apr 28–", note:"",              link:"" },
+      { title:"Ran 12.3",            titleKo:"란 12.3",      dirEn:"Akira Kurosawa", dirKo:"구로사와 아키라", runtime:162, screenDates:"Apr 28–", note:"4K restoration", link:"" },
+      { title:"The Days of Theater", titleKo:"극장의 시간들", dirEn:"Lee Jong-un",    dirKo:"이종언",           runtime:95,  screenDates:"– May 7", note:"Closing soon",   link:"" },
+    ]},
+  ]},
+  { venueKo:"한국영상자료원",   venueEn:"KOFA Cinematheque", type:"c", open:true,  programs:[
+    { name:"트립 시네마: 물질, 접속, 조립", dates:"2026.04.28–05.30", open:true, films:[
+      { title:"Altered States",        titleKo:"상태 개조",             dirEn:"Ken Russell",            dirKo:"켄 러셀",             runtime:102, screenDates:"Apr 28 16:00", note:"D-Cinema", link:"" },
+      { title:"Spring Breakers (4K)",  titleKo:"스프링 브레이커즈",     dirEn:"Harmony Korine",         dirKo:"하모니 코린",          runtime:94,  screenDates:"Apr 28 19:00", note:"4K",       link:"" },
+      { title:"Jacob's Ladder (4K)",   titleKo:"야곱의 사다리",          dirEn:"Adrian Lyne",            dirKo:"에이드리언 라인",      runtime:114, screenDates:"Apr 29 16:00", note:"4K",       link:"" },
+      { title:"Speed Racer",           titleKo:"스피드 레이서",          dirEn:"Lilly & Lana Wachowski", dirKo:"릴리·라나 워쇼스키",  runtime:133, screenDates:"Apr 29 19:00", note:"D-Cinema", link:"" },
+      { title:"2001: A Space Odyssey", titleKo:"2001 스페이스 오디세이", dirEn:"Stanley Kubrick",        dirKo:"스탠리 큐브릭",        runtime:149, screenDates:"Apr 30 15:30", note:"",         link:"" },
+    ]},
+    { name:"고다르 회고전", dates:"2026.01.10–02.28", open:false, films:[
+      { title:"Breathless", titleKo:"네 멋대로 해라", dirEn:"Jean-Luc Godard", dirKo:"장 뤽 고다르", runtime:90,  screenDates:"Jan 10,13,17", note:"35mm",        link:"" },
+      { title:"Contempt",   titleKo:"경멸",           dirEn:"Jean-Luc Godard", dirKo:"장 뤽 고다르", runtime:103, screenDates:"Jan 20,24",    note:"DCP restored", link:"" },
+    ]},
+  ]},
+  { venueKo:"라이카시네마",     venueEn:"Laika Cinema",      type:"c", open:false, programs:[
+    { name:"폴 토마스 앤더슨 특별전", dates:"2026.05", open:false, films:[
+      { title:"Phantom Thread",           titleKo:"팬텀 스레드",           dirEn:"Paul Thomas Anderson", dirKo:"폴 토마스 앤더슨", runtime:130, screenDates:"May 2026", note:"",           link:"" },
+      { title:"There Will Be Blood",      titleKo:"데어 윌 비 블러드",     dirEn:"Paul Thomas Anderson", dirKo:"폴 토마스 앤더슨", runtime:158, screenDates:"May 2026", note:"",           link:"" },
+      { title:"One Battle After Another", titleKo:"원 배틀 애프터 어나더", dirEn:"Paul Thomas Anderson", dirKo:"폴 토마스 앤더슨", runtime:0,   screenDates:"May 2026", note:"New release", link:"" },
+    ]},
+  ]},
+  { venueKo:"서울아트시네마",   venueEn:"Seoul Art Cinema",  type:"c", open:false, programs:[
+    { name:"상영 일정 (직접 확인 필요)", dates:"2026.05", open:false, films:[
+      { title:"—", titleKo:"—", dirEn:"", dirKo:"", runtime:0, screenDates:"", note:"cinematheque.seoul.kr 에서 확인하세요", link:"" },
+    ]},
+  ]},
+];
+
+/* ═══════════════════════════════
+   APP LOGIC — do not edit below
+═══════════════════════════════ */
+var activeMain='r', activeWeek=Object.keys(WEEKS)[0];
+var sortKey='date', sortDir=1, dirEdits={}, myPicks={};
+
+function wLabel(k){ return WEEKS[k].label; }
+
+function init(){
+  document.getElementById('mDate').textContent=
+    new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('cnt-s').textContent=
+    SPECIAL.reduce(function(a,v){return a+v.programs.reduce(function(b,p){return b+p.films.length;},0);},0);
+  document.getElementById('cnt-f').textContent=0;
+  buildArch(); buildFilters(); render(); buildSp(); updateMyTab();
+}
+
+function sw(t){
+  activeMain=t;
+  ['r','s','m','f'].forEach(function(x){
+    document.getElementById('tab-'+x).classList.toggle('on',x===t);
+    document.getElementById('v-'+x).style.display=x===t?'block':'none';
+  });
+  if(t==='m') renderMyPicks();
+}
+
+function buildArch(){
+  document.getElementById('archBar').innerHTML=Object.keys(WEEKS).map(function(k){
+    return '<div class="atab'+(k===activeWeek?' on':'')+'" onclick="switchWk(\''+k+'\')">'+wLabel(k)+'</div>';
+  }).join('');
+  document.getElementById('cnt-r').textContent=WEEKS[activeWeek].movies.length;
+}
+function switchWk(k){ activeWeek=k; sortKey='date'; sortDir=1; buildArch(); render(); }
+
+function allMovies(){
+  var all=[];
+  Object.keys(WEEKS).forEach(function(k){
+    WEEKS[k].movies.forEach(function(m,i){ all.push(Object.assign({},m,{_week:k,_idx:i})); });
+  });
+  return all;
+}
+
+function buildFilters(){
+  var pool=allMovies();
+  var cs=[...new Set(pool.map(function(m){return m.country;}).filter(Boolean))].sort();
+  var ts=[...new Set(pool.map(function(m){return m.type;}).filter(Boolean))].sort();
+  var ks=[...new Set(pool.reduce(function(a,m){return a.concat(m.keywords);},[])) ].sort(function(a,b){return a.localeCompare(b,'ko');});
+  document.getElementById('fCountry').innerHTML='<option value="">All</option>'+cs.map(function(c){return'<option value="'+c+'">'+c+'</option>';}).join('');
+  document.getElementById('fType').innerHTML='<option value="">All</option>'+ts.map(function(t){return'<option value="'+t+'">'+t+'</option>';}).join('');
+  document.getElementById('fKeyword').innerHTML='<option value="">All keywords</option>'+ks.map(function(k){return'<option value="'+k+'">'+k+'</option>';}).join('');
+}
+
+function getFilt(){
+  var q=document.getElementById('srch').value.toLowerCase().trim();
+  var gc=document.getElementById('fCountry').value;
+  var gt=document.getElementById('fType').value;
+  var gk=document.getElementById('fKeyword').value;
+  var gs=document.getElementById('fStatus').value;
+  var pool=q?allMovies():WEEKS[activeWeek].movies.map(function(m,i){return Object.assign({},m,{_week:activeWeek,_idx:i});});
+  return pool.filter(function(m){
+    var mq=!q||[m.title,m.titleKo,m.dirEn,m.dirKo,m.cast,m.country,m.type].concat(m.keywords).some(function(f){return f&&f.toLowerCase().includes(q);});
+    return mq&&(!gc||m.country===gc)&&(!gt||m.type===gt)&&(!gk||m.keywords.indexOf(gk)>-1)&&(!gs||m.status===gs);
+  }).sort(function(a,b){
+    var av=a[sortKey]||'',bv=b[sortKey]||'';
+    if(typeof av==='string'){av=av.toLowerCase();bv=bv.toLowerCase();}
+    return av<bv?-sortDir:av>bv?sortDir:0;
+  });
+}
+
+function filmRow(m, wk, idx, searching){
+  var rk=wk+'-'+idx;
+  var dk=dirEdits[rk]!==undefined?dirEdits[rk]:m.dirKo;
+  var rt=m.runtime>0?m.runtime:'—', isMy=!!myPicks[rk];
+  var rc=m.pick&&isMy?'bothpick':m.pick?'epick':isMy?'mpick':'';
+  var titleHtml;
+  if(m.link){
+    titleHtml='<a class="title-link" href="'+m.link+'" target="_blank" rel="noopener">'
+      +'<div class="tm">'+m.title+' <span class="title-link-icon">↗</span></div>'
+      +'<div class="ts">'+m.titleKo+'</div></a>';
+  } else {
+    titleHtml='<div class="tm">'+m.title+'</div><div class="ts">'+m.titleKo+'</div>';
+  }
+  return '<tr class="'+rc+'">'
+    +'<td class="c-pick">'+(m.pick?'<span class="pbadge">PICK</span>':'')+'</td>'
+    +'<td class="c-mypick"><span class="mypick-btn '+(isMy?'on':'off')+'" onclick="toggleMy(\''+rk+'\')">'+(isMy?'★':'☆')+'</span></td>'
+    +'<td class="c-rel dtcell">'+m.date+(searching?'<div class="week-src">'+wLabel(wk)+'</div>':'')+'</td>'
+    +'<td class="c-title">'+titleHtml+'</td>'
+    +'<td class="c-cast" style="font-size:13px;color:var(--text2);">'+m.cast+'</td>'
+    +'<td class="c-dir"><div class="den">'+m.dirEn+'</div><div class="dko" id="dk-'+rk+'">'+dk+'</div><div class="dedit" onclick="editDk(\''+rk+'\')">수정</div></td>'
+    +'<td class="c-rt" style="font-size:13px;color:var(--text2);">'+rt+'</td>'
+    +'<td class="c-cntry cntry-cell">'+m.country+'</td>'
+    +'<td class="c-type"><span class="tpill">'+m.type+'</span></td>'
+    +'<td class="c-kw"><div class="kwrap">'+m.keywords.map(function(k){return'<span class="kpill">'+k+'</span>';}).join('')+'</div></td>'
+    +'<td class="c-st"><span class="badge '+(m.status==='new'?'bnew':'bre')+'">'+(m.status==='new'?'NEW':'RE')+'</span></td>'
+    +'</tr>';
+}
+
+function render(){
+  var q=document.getElementById('srch').value.trim();
+  var data=getFilt(), searching=q.length>0;
+  var scope=document.getElementById('scopeLabel');
+  scope.innerHTML=searching
+    ?'Searching <span>all weeks</span> · '+data.length+' result'+(data.length!==1?'s':'')
+    :'Showing <span>'+wLabel(activeWeek)+'</span>';
+  document.getElementById('cnt-r').textContent=WEEKS[activeWeek].movies.length;
+  document.getElementById('rcnt').textContent=data.length+' of '+(searching?allMovies().length+' total films':WEEKS[activeWeek].movies.length+' titles this week');
+  if(!data.length){document.getElementById('tbody').innerHTML='';document.getElementById('nores').style.display='block';return;}
+  document.getElementById('nores').style.display='none';
+  document.getElementById('tbody').innerHTML=data.map(function(m){
+    var wk=m._week||activeWeek, idx=m._idx!==undefined?m._idx:WEEKS[activeWeek].movies.indexOf(m);
+    return filmRow(m, wk, idx, searching);
+  }).join('');
+}
+
+function toggleMy(rk){ myPicks[rk]=!myPicks[rk]; if(!myPicks[rk])delete myPicks[rk]; updateMyTab(); render(); }
+function updateMyTab(){ document.getElementById('cnt-m').textContent=Object.keys(myPicks).length; }
+
+function renderMyPicks(){
+  var keys=Object.keys(myPicks);
+  document.getElementById('mycnt').textContent=keys.length+' film'+(keys.length!==1?'s':'')+' saved';
+  if(!keys.length){document.getElementById('mybody').innerHTML='';document.getElementById('myEmpty').style.display='block';return;}
+  document.getElementById('myEmpty').style.display='none';
+  document.getElementById('mybody').innerHTML=keys.map(function(rk){
+    var p=rk.split('-'),wk=p[0]+'-'+p[1],idx=parseInt(p[2]);
+    var m=WEEKS[wk]&&WEEKS[wk].movies[idx]; if(!m)return'';
+    return filmRow(m, wk, idx, true);
+  }).join('');
+}
+
+function editDk(rk){
+  var el=document.getElementById('dk-'+rk),cur=el.textContent;
+  el.innerHTML='<input type="text" value="'+cur+'" style="width:100%;font-size:12px;padding:2px 4px;border:.5px solid #d0cfc8;border-radius:4px;background:#fff;color:#1a1a18;font-family:\'Noto Serif KR\',serif;outline:none;" onblur="saveDk(\''+rk+'\',this.value)" onkeydown="if(event.key===\'Enter\')this.blur()"/>';
+  el.querySelector('input').focus();
+}
+function saveDk(rk,val){
+  dirEdits[rk]=val;
+  var p=rk.split('-'); WEEKS[p[0]+'-'+p[1]].movies[parseInt(p[2])].dirKo=val; render();
+}
+
+function srt(k){
+  if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=1;}
+  document.querySelectorAll('th').forEach(function(t){t.classList.remove('srt');});
+  document.querySelectorAll('.si').forEach(function(i){i.textContent='↕';});
+  var el=document.getElementById('s-'+k);
+  if(el){el.closest('th').classList.add('srt');el.textContent=sortDir===1?'↑':'↓';}
+  render();
+}
+
+function mkXLrow(m,wk,rk){
+  return [m.pick?'PICK':'', myPicks[rk]?'★':'', m.date, m.title, m.titleKo, m.cast,
+          m.dirEn, dirEdits[rk]||m.dirKo, m.runtime||'', m.country, m.type,
+          m.keywords.join(' | '), m.status==='new'?'New Release':'Re-release', wLabel(wk), m.link||''];
+}
+function exportXL(){
+  var data=getFilt();
+  var rows=[['Editor Pick','My Pick','Release','Title (EN)','Title (KO)','Cast','Director (EN)','Director (KO)','Min','Country','Type','Keywords','Status','Week','Link']];
+  data.forEach(function(m){
+    var wk=m._week||activeWeek, idx=m._idx!==undefined?m._idx:WEEKS[activeWeek].movies.indexOf(m);
+    rows.push(mkXLrow(m,wk,wk+'-'+idx));
+  });
+  var ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=[8,6,12,20,18,22,18,16,6,10,12,28,12,18,30].map(function(w){return{wch:w};});
+  var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Films'); XLSX.writeFile(wb,'이번주뭐볼까.xlsx');
+}
+function exportMyXL(){
+  var keys=Object.keys(myPicks); if(!keys.length)return;
+  var rows=[['Editor Pick','Release','Title (EN)','Title (KO)','Cast','Director (EN)','Min','Country','Type','Keywords','Status','Week','Link']];
+  keys.forEach(function(rk){
+    var p=rk.split('-'),wk=p[0]+'-'+p[1],idx=parseInt(p[2]),m=WEEKS[wk]&&WEEKS[wk].movies[idx]; if(!m)return;
+    rows.push(mkXLrow(m,wk,rk).slice(1));
+  });
+  var ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=[8,12,20,18,22,18,6,10,12,28,12,18,30].map(function(w){return{wch:w};});
+  var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'My Picks'); XLSX.writeFile(wb,'내picks.xlsx');
+}
+
+function buildSp(){
+  document.getElementById('spContent').innerHTML=SPECIAL.map(function(v,vi){
+    var tc=v.type==='c'?'vt-c':'vt-t', tl=v.type==='c'?'Cinematheque':'Theater';
+    var progs=v.programs.map(function(p,pi){
+      var hdrs='<div class="film-grid-hdr"><div class="fghdr">Title</div><div class="fghdr">Director</div><div class="fghdr fg-dates">Dates</div><div class="fghdr" style="text-align:right;padding-right:8px;">Min</div><div class="fghdr">Note</div></div>';
+      var rows=p.films.map(function(f){
+        var tCell=f.link
+          ?'<a href="'+f.link+'" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;"><div class="tm">'+f.title+' <span style="font-size:10px;color:var(--text3);">↗</span></div><div class="ts">'+f.titleKo+'</div></a>'
+          :'<div class="tm">'+f.title+'</div><div class="ts">'+f.titleKo+'</div>';
+        return '<div class="film-grid-row">'
+          +'<div class="fg-cell">'+tCell+'</div>'
+          +'<div class="fg-cell"><div class="den">'+f.dirEn+'</div><div class="dko">'+f.dirKo+'</div></div>'
+          +'<div class="fg-cell fg-dates">'+f.screenDates+'</div>'
+          +'<div class="fg-cell fg-rt">'+(f.runtime||'—')+'</div>'
+          +'<div class="fg-cell fg-note">'+f.note+'</div>'
+          +'</div>';
+      }).join('');
+      return '<div class="prog-block"><div class="prog-hdr" onclick="toggleProg('+vi+','+pi+')">'
+        +'<span class="prog-arrow'+(p.open?' open':'')+'" id="pa-'+vi+'-'+pi+'">▶</span>'
+        +'<span class="prog-name">'+p.name+'</span><span class="prog-dates">'+p.dates+'</span></div>'
+        +'<div class="prog-films'+(p.open?' open':'')+'" id="pf-'+vi+'-'+pi+'">'+hdrs+rows+'</div></div>';
+    }).join('');
+    return '<div class="venue-block"><div class="venue-hdr" onclick="toggleVenue('+vi+')">'
+      +'<span class="venue-arrow'+(v.open?' open':'')+'" id="va-'+vi+'">▶</span>'
+      +'<div><div class="venue-name-ko">'+v.venueKo+'</div><div class="venue-name-en">'+v.venueEn+'</div></div>'
+      +'<span class="venue-tag '+tc+'">'+tl+'</span></div>'
+      +'<div class="venue-body'+(v.open?' open':'')+'" id="vb-'+vi+'">'+progs+'</div></div>';
+  }).join('');
+}
+function toggleVenue(vi){
+  SPECIAL[vi].open=!SPECIAL[vi].open;
+  document.getElementById('vb-'+vi).classList.toggle('open',SPECIAL[vi].open);
+  document.getElementById('va-'+vi).classList.toggle('open',SPECIAL[vi].open);
+}
+function toggleProg(vi,pi){
+  SPECIAL[vi].programs[pi].open=!SPECIAL[vi].programs[pi].open;
+  document.getElementById('pf-'+vi+'-'+pi).classList.toggle('open',SPECIAL[vi].programs[pi].open);
+  document.getElementById('pa-'+vi+'-'+pi).classList.toggle('open',SPECIAL[vi].programs[pi].open);
+}
+init();
+</script>
+</body>
+</html>
