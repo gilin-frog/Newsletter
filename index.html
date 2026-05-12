@@ -270,18 +270,15 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
   <div class="mast-top">
     <div>
       <div class="mast-ko">이번 주에 뭐볼까...</div>
-      <div class="mast-note">매주 월요일, 이번 주 개봉작과 서울 아트하우스 상영 일정을 정리합니다. 극장에서 좋은 영화 많이 보세요.</div>
+      <div class="mast-note">매주 월요일, 이번 주 개봉작을 정리합니다. 극장에서 좋은 영화 많이 보세요.</div>
     </div>
     <div class="mast-right">
-      <div class="mast-issue">Issue No. <span id="issueNo">19</span></div>
+      <div class="mast-issue">Issue No. <span id="issueNo">001</span></div>
       <div class="mast-date" id="mDate"></div>
     </div>
   </div>
   <div class="mast-tabs">
     <div class="mtab on" id="tab-r" onclick="sw('r')">이번 주 개봉 <span class="mtab-cnt" id="cnt-r">0</span></div>
-    <div class="mtab"    id="tab-s" onclick="sw('s')">특별 상영 <span class="mtab-cnt" id="cnt-s">0</span></div>
-    <div class="mtab"    id="tab-f" onclick="sw('f')">영화제 <span class="mtab-cnt" id="cnt-f">0</span></div>
-    <div class="mtab"    id="tab-m" onclick="sw('m')">내 picks ★ <span class="mtab-cnt" id="cnt-m">0</span></div>
   </div>
 </div>
 
@@ -292,13 +289,7 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
     <span class="scope-lbl" id="scopeLabel"></span>
     <button class="cbtn cbtn-g" onclick="exportXL()">↓ Excel</button>
   </div>
-  <!-- mobile-only filter bar -->
-  <div class="mobile-filters" id="mobileFilters">
-    <select id="fCountryM" onchange="syncFilter('fCountry','fCountryM');render()"><option value="">All countries</option></select>
-    <select id="fTypeM"    onchange="syncFilter('fType','fTypeM');render()"><option value="">All types</option></select>
-    <select id="fKeywordM" onchange="syncFilter('fKeyword','fKeywordM');render()"><option value="">All keywords</option></select>
-    <select id="fStatusM"  onchange="syncFilter('fStatus','fStatusM');render()"><option value="">All</option><option value="new">New</option><option value="re">Re-release</option></select>
-  </div>
+
   <div class="twrap">
     <table>
       <thead>
@@ -434,38 +425,70 @@ var WEEKS = {
   },
   ────────────────────────────────────────────────────────── */
 
-  "2026-W19": {
-    label: "May 5–11, 2026",
+  "2026-W20": {
+    label: "May 12–18, 2026",
     movies: [
-      { title:"The Mandalorian & Grogu",  titleKo:"만달로리안과 그로구",      dirEn:"Jon Favreau",             dirKo:"존 파브로",             cast:"Pedro Pascal",                             runtime:0,   country:"USA",     type:"Live Action",   keywords:["SF","히어로","미래"],                     status:"new", date:"2026-05-07", pick:false, link:"" },
-      { title:"The Devil Wears Prada 2",  titleKo:"악마는 프라다를 입는다 2", dirEn:"Wendy Finerman",          dirKo:"웬디 피너만",            cast:"Meryl Streep, Anne Hathaway, Emily Blunt", runtime:0,   country:"USA",     type:"Live Action",   keywords:["여성","사회비판","코미디/유머/블랙코미디"], status:"new", date:"2026-05-01", pick:true,  link:"" },
-      { title:"Saltwater",                titleKo:"짝사랑 세계",              dirEn:"Nobuhiro Doi",            dirKo:"도이 노부히로",          cast:"Hirose Suzu, Sugisaki Hana",               runtime:0,   country:"Japan",   type:"Live Action",   keywords:["사랑/연애/로맨스","성장/청춘","우정"],     status:"new", date:"2026-05-07", pick:true,  link:"" },
-      { title:"5 Centimeters Per Second", titleKo:"초속 5센티미터",           dirEn:"Miki Takahiro",           dirKo:"미키 타카히로",          cast:"Micheda Shunsuke",                         runtime:0,   country:"Japan",   type:"Live Action",   keywords:["사랑/연애/로맨스","성장/청춘"],            status:"new", date:"2026-05-07", pick:false, link:"" },
-      { title:"Pina",                     titleKo:"피나",                     dirEn:"Wim Wenders",             dirKo:"빔 벤더스",              cast:"Pina Bausch dance company",                runtime:106, country:"Germany", type:"Documentary",   keywords:["음악/춤","예술/예술가","4K 복원"],         status:"re",  date:"2026-04-28", pick:true,  link:"" },
-      { title:"Ran 12.3",                 titleKo:"란 12.3",                  dirEn:"Akira Kurosawa",          dirKo:"구로사와 아키라",        cast:"Tatsuya Nakadai, Akira Terao",             runtime:162, country:"Japan",   type:"Live Action",   keywords:["역사","전쟁","4K 복원"],                  status:"re",  date:"2026-04-28", pick:true,  link:"" },
-      { title:"Sultana's Dream",          titleKo:"술타나의 꿈",              dirEn:"Isabel Herguera",         dirKo:"이사벨 에르게라",        cast:"animated",                                 runtime:80,  country:"Spain",   type:"Animation",     keywords:["여성","판타지","민주주의"],               status:"new", date:"2026-03-19", pick:true,  link:"" },
-      { title:"The Day She Returned",     titleKo:"그녀가 돌아온 날",         dirEn:"TBC",                     dirKo:"TBC",                    cast:"TBC",                                      runtime:0,   country:"Korea",   type:"Live Action",   keywords:["여성"],                                   status:"new", date:"2026-04-24", pick:false, link:"" },
+    { title:"Teaching Practice: Idiot Girls and School Ghost 2",               titleKo:"교생실습",              dirEn:"Kim Min-ha",              dirKo:"김민하",        cast:"한선화, 홍예지, 이여름, 유선호",                  runtime:95,   country:"Korea",          type:"Live Action",  keywords:["학교","호러/공포/고어","코미디/유머/블랙코미디","성장/청춘"],              status:"new", date:"2026-05-13", pick:true,  link:"" },
+      { title:"The Last Breath",     titleKo:"데몬 샤크 헌터스", dirEn:"Lim Dae-hee",            dirKo:"요아힘 히데",        cast:"마동석, 서현, 이다윗",                            runtime:91,  country:"Korea",          type:"Live Action",  keywords:["종교/심령","범죄/폭력/테러","판타지","호러/공포/고어"],                   status:"new", date:"2026-05-13", pick:false, link:"" },
+      { title:"Michael",                       titleKo:"마이클",                dirEn:"Antoine Fuqua",           dirKo:"안톤 후쿠아",   cast:"Jaafar Jackson, Nia Long, Miles Teller, Colman Domingo", runtime:127, country:"USA",   type:"Live Action",  keywords:["음악/춤","전기/바이오","실화","예술/예술가"],                             status:"new", date:"2026-05-13", pick:false, link:"" },
+      { title:"Anselm",                        titleKo:"안젤름",                dirEn:"Wim Wenders",             dirKo:"빔 벤더스",     cast:"Anselm Kiefer",                                  runtime:93,  country:"Germany",        type:"Documentary",  keywords:["예술/예술가","역사","건축","4K 복원"],                                    status:"new", date:"2026-05-13", pick:true,  link:"" },
+      { title:"Little Sister",                 titleKo:"파티마가 사랑한 계절",  dirEn:"Hafsia Herzi",            dirKo:"합시아 헤르지", cast:"Nadia Melliti, 박지민",                           runtime:108, country:"France / Germany", type:"Live Action", keywords:["LGBTQ","사랑/연애/로맨스","성장/청춘","이민/이주","종교/심령"],            status:"new", date:"2026-05-13", pick:true,  link:"" },
+      { title:"Pierce",                        titleKo:"피어스",                dirEn:"Nelicia Low",             dirKo:"넬리시아 로우", cast:"조우녕, 류수보, 닝딩",                            runtime:105, country:"Taiwan / Singapore / Poland", type:"Live Action", keywords:["서스펜스/미스터리","심리","우정","범죄/폭력/테러"],  status:"new", date:"2026-05-13", pick:false, link:"" },
+      { title:"Dog Trainer",                   titleKo:"훈련사",                dirEn:"Seo Eun-seon",            dirKo:"서은선",        cast:"최승윤, 김승화, 정환",                            runtime:0,   country:"Korea",          type:"Live Action",  keywords:["심리","호러/공포/고어","여성","동물"],                                    status:"new", date:"2026-05-13", pick:false, link:"" },     
     ]
   },
 
-  "2026-W18": {
-    label: "Apr 28 – May 4, 2026",
+  "2026-W21": {
+    label: "May 19-25, 2026",
     movies: [
-      { title:"Journey to Gyeongju", titleKo:"경주기행",  dirEn:"TBC",              dirKo:"TBC",    cast:"이정은, 공효진",         runtime:0, country:"Korea", type:"Live Action", keywords:["여성","복수","로드무비"],       status:"new", date:"2026-04-28", pick:true,  link:"" },
-      { title:"Salvokji",            titleKo:"살목지",    dirEn:"Lee Sang-min",     dirKo:"이상민", cast:"김혜윤, 이종원, 김준한", runtime:0, country:"Korea", type:"Live Action", keywords:["호러/공포/고어","종교/심령"],   status:"new", date:"2026-04-28", pick:false, link:"" },
-      { title:"Jjangu",              titleKo:"짱구",      dirEn:"Kang Hyung-cheol", dirKo:"강형철", cast:"안재홍",                 runtime:0, country:"Korea", type:"Live Action", keywords:["성장/청춘","코미디/유머/블랙코미디"], status:"new", date:"2026-04-22", pick:false, link:"" },
+      { title:"1026: For a New World",         titleKo:"1026: 새로운 세상을 위한", dirEn:"Choi Wi-an",           dirKo:"최위안",        cast:"권혁성, 김진환, 전노민, 최진호",                  runtime:0,   country:"Korea",          type:"Documentary",  keywords:["역사","정치/저항","독재","민주주의","실화"],                              status:"new", date:"2026-05-20", pick:false, link:"" },
+      { title:"Namtaeryeong",                  titleKo:"남태령",                dirEn:"Kim Hyun-ji",             dirKo:"김현지",        cast:"다큐멘터리",                                      runtime:0,   country:"Korea",          type:"Documentary",  keywords:["시위","정치/저항","민주주의","투쟁","실화"],                              status:"new", date:"2026-05-20", pick:false, link:"" },
+      { title:"Nirvanna the Band the Show",    titleKo:"너바나: 더 밴드",       dirEn:"Matt Johnson, Jay McCarrol", dirKo:"맷 존슨, 제이 맥캐롤", cast:"Matt Johnson, Jay McCarrol",         runtime:0,   country:"Canada",         type:"Live Action",  keywords:["코미디/유머/블랙코미디","음악/춤","우정","모험"],                         status:"new", date:"2026-05-20", pick:true,  link:"" },
+      { title:"Monkey King",                   titleKo:"반칙왕 몽키",           dirEn:"TBC",                     dirKo:"TBC",           cast:"TBC",                                            runtime:0,   country:"TBC",            type:"Animation",    keywords:["모험","판타지","코미디/유머/블랙코미디"],                                 status:"new", date:"2026-05-20", pick:false, link:"" },
+      { title:"Gintama: Yoshiwara Blaze",      titleKo:"신극장판 은혼: 요시와라 대염상", dirEn:"Ando Naoya",     dirKo:"안도 나오야",   cast:"Sugita Tomokazu",                                runtime:0,   country:"Japan",          type:"Animation",    keywords:["음악/춤","판타지","모험","애니메이션"],                                   status:"new", date:"2026-05-20", pick:false, link:"" },
+      { title:"Colony",                          titleKo:"군체",                   dirEn:"Yeon Sang-ho",            dirKo:"연상호",        cast:"전지현, 구교환, 지창욱, 신현빈, 고수",           runtime:0,   country:"Korea",                      type:"Live Action",  keywords:["재난/천재지변","호러/공포/고어","투쟁","SF","도시/도시화"],                status:"new", date:"2026-05-21", pick:true,  link:"" },
+         ]
+  },
+
+  "2026-W24": {
+    label: "May 26–Jun 1, 2026",
+    movies: [
+      { title:"Give Me a Ride",                  titleKo:"뒷자리에 태워줘",        dirEn:"TBC",                     dirKo:"TBC",           cast:"TBC",                                            runtime:0,   country:"Korea",                      type:"Live Action",  keywords:["사랑/연애/로맨스","성장/청춘","로드무비"],                                status:"new", date:"2026-05-27", pick:true,  link:"" },
+      { title:"Reminders of Him",                titleKo:"리마인더스 오브 힘",     dirEn:"Castille Landon",         dirKo:"캐스틸 랜던",   cast:"Nicholas Galitzine, Bella Ramsey",               runtime:0,   country:"USA",                        type:"Live Action",  keywords:["사랑/연애/로맨스","죽음","치유"],                                         status:"new", date:"2026-05-27", pick:false, link:"" },
+      { title:"The Mandalorian & Grogu",         titleKo:"만달로리안과 그로구",    dirEn:"Jon Favreau",             dirKo:"존 파브로",     cast:"Pedro Pascal",                                   runtime:0,   country:"USA",                        type:"Live Action",  keywords:["SF","히어로","미래"],                                                     status:"new", date:"2026-05-27", pick:true,  link:"" },
+      { title:"The Backrooms",                   titleKo:"백룸",                   dirEn:"Kane Parsons",            dirKo:"케인 파슨스",   cast:"Chiwetel Ejiofor, Renate Reinsve",               runtime:0,   country:"USA",                        type:"Live Action",  keywords:["호러/공포/고어","SF","서스펜스/미스터리","인터넷/가상세계/첨단기술"],      status:"new", date:"2026-05-27", pick:true,  link:"" },
+      { title:"Mr. Shota's Last Business Trip",  titleKo:"쇼타씨의 마지막 출장",  dirEn:"TBC",                     dirKo:"TBC",           cast:"TBC",                                            runtime:0,   country:"Japan",                      type:"Live Action",  keywords:["코미디/유머/블랙코미디","노동","죽음"],                                   status:"new", date:"2026-05-27", pick:false, link:"" },
+      { title:"Enzo",                            titleKo:"엔조",                   dirEn:"TBC",                     dirKo:"TBC",           cast:"TBC",                                            runtime:0,   country:"France",                     type:"Live Action",  keywords:["사랑/연애/로맨스","성장/청춘"],                                           status:"new", date:"2026-05-27", pick:false, link:"" },
+      { title:"Final Peace",                     titleKo:"파이널 피스",            dirEn:"TBC",                     dirKo:"TBC",           cast:"TBC",                                            runtime:0,   country:"TBC",                        type:"Live Action",  keywords:["서스펜스/미스터리","추리/탐정"],                                          status:"new", date:"2026-05-27", pick:false, link:"" },
+      { title:"Eureka",                          titleKo:"유레카",                 dirEn:"Lisandro Alonso",         dirKo:"리산드로 알론소", cast:"Viggo Mortensen, Chiara Mastroianni",           runtime:134, country:"France / Germany / Portugal", type:"Live Action",  keywords:["로드무비","인권","자연/풍경","실험"],                                     status:"new", date:"2026-05-27", pick:true,  link:"" },
+      { title:"Romeria",                         titleKo:"로메리아",               dirEn:"Carla Simón",             dirKo:"카를라 시몬",   cast:"TBC",                                            runtime:0,   country:"Spain",                      type:"Documentary",  keywords:["가족","전통문화","자연/풍경"],                                            status:"new", date:"2026-05-27", pick:true,  link:"" },
+      { title:"The Strange Candy Shop Zenitendo",titleKo:"이상한 과자가게 전천당", dirEn:"TBC",                     dirKo:"TBC",           cast:"라미란, 이레",                                   runtime:0,   country:"Korea",                      type:"Live Action",  keywords:["판타지","아동","문학"],                                                   status:"new", date:"2026-05-29", pick:false, link:"" },
     ]
   },
 
-  "2026-W17": {
-    label: "Apr 20–26, 2026",
+  "2026-W25": {
+    label: "Jun 2-8, 2026",
     movies: [
-      { title:"Project Hail Mary", titleKo:"프로젝트 헤일메리", dirEn:"Phil Lord, Chris Miller", dirKo:"필 로드, 크리스 밀러", cast:"Ryan Gosling",   runtime:0, country:"USA",   type:"Live Action", keywords:["SF","미래","투쟁"],   status:"new", date:"2026-03-18", pick:true,  link:"" },
-      { title:"Blizzard",          titleKo:"폭설",               dirEn:"TBC",                    dirKo:"TBC",                  cast:"김윤석, 구교환", runtime:0, country:"Korea", type:"Live Action", keywords:["심리","서스펜스/미스터리"], status:"new", date:"2026-04-22", pick:false, link:"" },
+      { title:"Afternoon of Solitude", titleKo:"고독의 오후", dirEn:"Albert Serra",  dirKo:"알베르트 세라", cast:"Adama Balde",                        runtime:0, country:"France / Spain / Portugal", type:"Documentary", keywords:["동물","예술/예술가","자연/풍경","실험"],          status:"new", date:"2026-06-03", pick:true,  link:"" },
+      { title:"Wild Thing",            titleKo:"와일드씽",   dirEn:"Son Jae-gon",   dirKo:"손재곤",        cast:"강동원, 엄태구, 박지현, 오정세",      runtime:0, country:"Korea",                     type:"Live Action", keywords:["음악/춤","코미디/유머/블랙코미디","예술/예술가"], status:"new", date:"2026-06-03", pick:true,  link:"" },     
+    ]
+  },
+
+  "2026-W22": {
+    label: "Jun 9-17, 2026",
+    movies: [
+      { title:"Disclosure Day",  titleKo:"디스클로저 데이", dirEn:"Steven Spielberg", dirKo:"스티븐 스필버그", cast:"Emily Blunt, Josh O'Connor, Colin Firth", runtime:0, country:"USA",   type:"Live Action", keywords:["SF","서스펜스/미스터리","인터넷/가상세계/첨단기술"], status:"new", date:"2026-06-10", pick:true,  link:"" },
+      { title:"Sheep in the Box", titleKo:"상자 속의 양",  dirEn:"TBC",              dirKo:"TBC",             cast:"TBC",                                    runtime:0, country:"TBC",   type:"Live Action", keywords:["서스펜스/미스터리","심리","아동"],                   status:"new", date:"2026-06-10", pick:true,  link:"" },
+      { title:"La Grande Illusion", titleKo:"위대한 환상", dirEn:"Jean Renoir",      dirKo:"장 르누아르",     cast:"Jean Gabin, Erich von Stroheim, Pierre Fresnay", runtime:114, country:"France", type:"Live Action", keywords:["전쟁","인권","역사","4K 복원"],           status:"re",  date:"2026-06-10", pick:false, link:"" },
+      { title:"Wanted",           titleKo:"현상수배",       dirEn:"TBC",              dirKo:"TBC",             cast:"TBC",                                    runtime:0, country:"TBC",   type:"Live Action", keywords:["범죄/폭력/테러","서스펜스/미스터리","추리/탐정"],   status:"new", date:"2026-06-10", pick:false, link:"" },
+      { title:"Toy Story 5", titleKo:"토이스토리 5", dirEn:"Andrew Stanton", dirKo:"앤드루 스탠튼", cast:"Tom Hanks, Tim Allen", runtime:0, country:"USA", type:"Animation", keywords:["가족","우정","애니메이션","모험"], status:"new", date:"2026-06-17", pick:true, link:"" },
     ]
   },
 
 }; /* ← END OF WEEKS */
+
+/* Note: W20 (May 12–18) has no releases — W19 films opening May 13–21 appear in W19.
+   W21 covers May 29 release. W22 covers Jun 3. W24 covers Jun 10. W25 covers Jun 17. */
 
 
 var SPECIAL = [
@@ -522,7 +545,7 @@ var SPECIAL = [
 /* ═══════════════════════════════
    APP LOGIC — do not edit below
 ═══════════════════════════════ */
-var activeMain='r', activeWeek=Object.keys(WEEKS)[0];
+var activeMain='r', activeWeek='2026-W19';
 var sortKey='date', sortDir=1, dirEdits={}, myPicks={};
 
 function wLabel(k){ return WEEKS[k].label; }
@@ -546,7 +569,8 @@ function sw(t){
 }
 
 function buildArch(){
-  document.getElementById('archBar').innerHTML=Object.keys(WEEKS).map(function(k){
+  var keys = Object.keys(WEEKS).sort(function(a,b){ return b.localeCompare(a); });
+  document.getElementById('archBar').innerHTML=keys.map(function(k){
     return '<div class="atab'+(k===activeWeek?' on':'')+'" onclick="switchWk(\''+k+'\')">'+wLabel(k)+'</div>';
   }).join('');
   document.getElementById('cnt-r').textContent=WEEKS[activeWeek].movies.length;
