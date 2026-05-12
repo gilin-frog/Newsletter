@@ -86,11 +86,8 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
 .title-link { text-decoration:none; color:inherit; }
 .title-link:hover .tm { text-decoration:underline; color:var(--dark); }
 .title-link-icon { font-size:10px; color:var(--text3); margin-left:4px; vertical-align:middle; }
-.no-link { cursor:default; }
 .den { font-size:14px; }
 .dko { font-size:12px; color:var(--text2); margin-top:2px; font-family:'Noto Serif KR',신명조,serif; }
-.dedit { font-size:11px; color:var(--text3); cursor:pointer; text-decoration:underline; margin-top:2px; }
-.dedit:hover { color:var(--text2); }
 .pbadge { display:inline-block; font-size:9px; font-weight:700; padding:2px 6px; border-radius:10px; background:var(--dark); color:var(--gold); letter-spacing:.07em; }
 .mypick-btn { font-size:18px; cursor:pointer; line-height:1; display:block; text-align:center; transition:transform .15s; user-select:none; }
 .mypick-btn:hover { transform:scale(1.2); }
@@ -143,123 +140,82 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
 .fg-dates { color:var(--text2); }
 .fest-placeholder { padding:48px 36px; text-align:center; color:var(--text3); font-size:14px; line-height:1.8; }
 
-/* ══════════════════════════════════════════
-   RESPONSIVE — tablet (≤900px)
-══════════════════════════════════════════ */
-@media (max-width: 900px) {
-  body { padding: 0 0 40px; font-size: 14px; }
-  .container { border-radius: 0; border-left: none; border-right: none; box-shadow: none; }
-  .mast { padding: 24px 20px 0; }
-  .mast-ko { font-size: 26px; }
-  .mast-note { font-size: 13px; max-width: 100%; }
-  .mast-right { display: none; } /* hide issue/date on small screens */
-  .mtab { font-size: 12px; padding: 10px 14px; }
-  .arch { padding: 0 20px; }
-  .sbar { padding: 12px 20px; gap: 6px; }
-  .sbar input { font-size: 13px; }
-  .twrap { padding: 0 20px 4px; }
-  .sp-wrap { padding: 16px 20px 24px; }
-  .foot { padding: 10px 20px 16px; font-size: 11px; }
-
-  /* hide less important columns on tablet */
-  .c-cast, .c-kw { display: none; }
-  thead tr.frow td.c-cast,
-  thead tr.frow td.c-kw { display: none; }
+/* ═══════════════════════════════
+   RESPONSIVE — tablet ≤900px
+═══════════════════════════════ */
+@media (max-width:900px) {
+  body { padding:0 0 40px; }
+  .container { border-radius:0; border-left:none; border-right:none; box-shadow:none; }
+  .mast { padding:24px 20px 0; }
+  .mast-ko { font-size:26px; }
+  .mast-note { font-size:13px; max-width:100%; }
+  .mast-right { display:none; }
+  .mtab { font-size:12px; padding:10px 14px; }
+  .arch { padding:0 20px; }
+  .sbar { padding:12px 20px; gap:6px; }
+  .twrap { padding:0 20px 4px; }
+  .sp-wrap { padding:16px 20px 24px; }
+  .foot { padding:10px 20px 16px; font-size:11px; }
+  /* hide cast + keywords columns */
+  .c-cast, .c-kw,
+  thead tr.hdr th.c-cast, thead tr.hdr th.c-kw,
+  thead tr.frow td.c-cast, thead tr.frow td.c-kw { display:none; }
 }
 
-/* ══════════════════════════════════════════
-   RESPONSIVE — mobile (≤640px)
-   Table rows become stacked cards
-══════════════════════════════════════════ */
-@media (max-width: 640px) {
-  body { padding: 0 0 32px; }
-  .mast { padding: 20px 16px 0; }
-  .mast-ko { font-size: 22px; }
-  .mast-note { font-size: 12px; }
-  .mtab { font-size: 11px; padding: 9px 11px; letter-spacing: 0; }
-  .mtab-cnt { display: none; }
-  .arch { padding: 0 16px; }
-  .atab { font-size: 11px; padding: 7px 10px; }
-  .sbar { padding: 10px 16px; flex-direction: column; align-items: stretch; }
-  .sbar input { min-width: unset; width: 100%; }
-  .scope-lbl { display: none; }
-  .twrap { padding: 0; overflow-x: unset; }
-  .foot { padding: 10px 16px 14px; flex-direction: column; align-items: flex-start; gap: 6px; }
-
-  /* ── CARD MODE: hide the real table, show cards instead ── */
-  table { display: none; }
-  .nores { padding: 28px 16px; }
-
-  /* cards container injected by JS */
-  .card-list { padding: 8px 16px 4px; }
+/* ═══════════════════════════════
+   RESPONSIVE — mobile ≤640px
+   Table → card layout
+═══════════════════════════════ */
+@media (max-width:640px) {
+  body { padding:0 0 28px; }
+  .mast { padding:18px 16px 0; }
+  .mast-ko { font-size:22px; }
+  .mast-note { font-size:12px; }
+  .mtab { font-size:11px; padding:9px 10px; letter-spacing:0; }
+  .mtab-cnt { display:none; }
+  .arch { padding:0 16px; }
+  .atab { font-size:11px; padding:7px 10px; }
+  .sbar { padding:10px 16px; flex-direction:column; align-items:stretch; }
+  .sbar input { min-width:unset; width:100%; }
+  .scope-lbl { display:none; }
+  .twrap { padding:0; overflow-x:unset; }
+  .foot { padding:10px 16px 14px; flex-direction:column; align-items:flex-start; gap:6px; }
+  /* hide table, show cards */
+  table { display:none; }
+  .nores { padding:24px 16px; }
+  .card-list { padding:8px 16px 4px; }
   .film-card {
-    background: var(--bg);
-    border: .5px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    position: relative;
+    background:var(--bg); border:.5px solid var(--border);
+    border-radius:var(--radius-lg); padding:14px 16px; margin-bottom:10px;
   }
-  .film-card.epick    { background: #fffdf4; border-color: #e8d98a; }
-  .film-card.mpick    { background: #f0f7ff; border-color: #aecef5; }
-  .film-card.bothpick { background: #f5fbf0; border-color: #9dd6b0; }
-
-  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
-  .card-title-wrap { flex: 1; min-width: 0; }
-  .card-title-wrap .tm { font-size: 15px; line-height: 1.3; }
-  .card-title-wrap .ts { font-size: 12px; margin-top: 3px; }
-  .card-actions { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
-  .card-mypick { font-size: 22px; cursor: pointer; line-height: 1; user-select: none; }
-  .card-mypick.on { color: #2d7dd2; }
-  .card-mypick.off { color: var(--border2); }
-
-  .card-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--text2); margin-bottom: 8px; }
-  .card-meta-item { display: flex; flex-direction: column; }
-  .card-meta-label { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-bottom: 1px; }
-
-  .card-dir { font-size: 12px; margin-bottom: 6px; }
-  .card-dir .den { font-weight: 600; }
-  .card-dir .dko { color: var(--text2); font-family: 'Noto Serif KR', serif; font-size: 11px; }
-
-  .card-kw { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 6px; }
-  .card-badges { display: flex; gap: 6px; align-items: center; margin-top: 8px; padding-top: 8px; border-top: .5px solid var(--border); }
-  .week-src-card { font-size: 10px; color: var(--text3); font-style: italic; margin-left: auto; }
-
-  /* mobile filter bar — hidden on desktop, shown on mobile */
-  .mobile-filters {
-    display: none;
-  }
-    gap: 6px;
-    padding: 8px 16px;
-    background: var(--bg2);
-    border-bottom: .5px solid var(--border);
-    overflow-x: auto;
-  }
-  .mobile-filters select {
-    font-size: 12px;
-    padding: 5px 8px;
-    border: .5px solid var(--border2);
-    border-radius: 6px;
-    background: var(--bg);
-    color: var(--text);
-    white-space: nowrap;
-    flex-shrink: 0;
-    outline: none;
-    font-family: Helvetica, Arial, sans-serif;
-  }
-  .mobile-filters { display: flex; overflow-x: auto; } /* show mobile filter bar on small screens */
-
-  /* special screenings mobile */
-  .venue-hdr { padding: 12px 14px; }
-  .venue-name-ko { font-size: 14px; }
-  .prog-hdr { padding: 9px 14px 9px 28px; }
-  .prog-name { font-size: 13px; }
-  .prog-films { padding: 0 14px 12px 28px; }
-  .film-grid-hdr, .film-grid-row { grid-template-columns: minmax(0,2fr) minmax(0,1.5fr) minmax(0,1fr); }
-  .film-grid-hdr .fghdr:nth-child(4),
-  .film-grid-hdr .fghdr:nth-child(5),
-  .film-grid-row .fg-cell:nth-child(4),
-  .film-grid-row .fg-cell:nth-child(5) { display: none; }
+  .film-card.epick    { background:#fffdf4; border-color:#e8d98a; }
+  .film-card.mpick    { background:#f0f7ff; border-color:#aecef5; }
+  .film-card.bothpick { background:#f5fbf0; border-color:#9dd6b0; }
+  .card-top { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:8px; }
+  .card-title-wrap { flex:1; min-width:0; }
+  .card-title-wrap .tm { font-size:15px; line-height:1.3; }
+  .card-title-wrap .ts { font-size:12px; margin-top:3px; }
+  .card-actions { display:flex; flex-direction:column; align-items:center; gap:6px; flex-shrink:0; }
+  .card-mypick { font-size:22px; cursor:pointer; line-height:1; user-select:none; }
+  .card-mypick.on { color:#2d7dd2; }
+  .card-mypick.off { color:var(--border2); }
+  .card-dir { font-size:12px; margin-bottom:6px; }
+  .card-dir .den { font-weight:600; }
+  .card-dir .dko { color:var(--text2); font-family:'Noto Serif KR',serif; font-size:11px; }
+  .card-meta { display:flex; flex-wrap:wrap; gap:5px 14px; font-size:12px; color:var(--text2); margin-bottom:6px; }
+  .card-meta-item { display:flex; flex-direction:column; }
+  .card-meta-lbl { font-size:9px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin-bottom:1px; }
+  .card-kw { display:flex; flex-wrap:wrap; gap:3px; margin-top:6px; }
+  .card-badges { display:flex; gap:6px; align-items:center; margin-top:8px; padding-top:8px; border-top:.5px solid var(--border); }
+  .week-src-card { font-size:10px; color:var(--text3); font-style:italic; margin-left:auto; }
+  /* special screenings: hide runtime + note columns */
+  .film-grid-hdr { grid-template-columns:minmax(0,2fr) minmax(0,1.5fr) minmax(0,1.2fr); }
+  .film-grid-row { grid-template-columns:minmax(0,2fr) minmax(0,1.5fr) minmax(0,1.2fr); }
+  .film-grid-hdr .fghdr:nth-child(4), .film-grid-hdr .fghdr:nth-child(5),
+  .film-grid-row  .fg-cell:nth-child(4), .film-grid-row  .fg-cell:nth-child(5) { display:none; }
+  .venue-hdr { padding:12px 14px; }
+  .prog-hdr  { padding:9px 14px 9px 28px; }
+  .prog-films { padding:0 14px 12px 28px; }
 }
 </style>
 </head>
@@ -270,16 +226,18 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
   <div class="mast-top">
     <div>
       <div class="mast-ko">이번 주에 뭐볼까...</div>
-      <div class="mast-note">매주 월요일, 이번 주 개봉작을 정리합니다. </div>
-        극장에서 좋은 영화 많이 보세요.</div>
+      <div class="mast-note">매주 월요일, 이번 주 개봉작과 서울 아트하우스 상영 일정을 정리합니다. 극장에서 좋은 영화 많이 보세요.</div>
     </div>
     <div class="mast-right">
-      <div class="mast-issue">Issue No. <span id="issueNo">001</span></div>
+      <div class="mast-issue">Issue No. <span id="issueNo">19</span></div>
       <div class="mast-date" id="mDate"></div>
     </div>
   </div>
   <div class="mast-tabs">
     <div class="mtab on" id="tab-r" onclick="sw('r')">이번 주 개봉 <span class="mtab-cnt" id="cnt-r">0</span></div>
+    <div class="mtab"    id="tab-s" onclick="sw('s')">특별 상영 <span class="mtab-cnt" id="cnt-s">0</span></div>
+    <div class="mtab"    id="tab-f" onclick="sw('f')">영화제 <span class="mtab-cnt" id="cnt-f">0</span></div>
+    <div class="mtab"    id="tab-m" onclick="sw('m')">내 picks ★ <span class="mtab-cnt" id="cnt-m">0</span></div>
   </div>
 </div>
 
@@ -290,7 +248,6 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
     <span class="scope-lbl" id="scopeLabel"></span>
     <button class="cbtn cbtn-g" onclick="exportXL()">↓ Excel</button>
   </div>
-
   <div class="twrap">
     <table>
       <thead>
@@ -310,10 +267,10 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
         <tr class="frow">
           <td class="c-pick"></td><td class="c-mypick"></td><td class="c-rel"></td>
           <td class="c-title"></td><td class="c-cast"></td><td class="c-dir"></td><td class="c-rt"></td>
-          <td class="c-cntry"><select id="fCountry" onchange="syncFilter('fCountry','fCountryM');render()"><option value="">All</option></select></td>
-          <td class="c-type"><select id="fType" onchange="syncFilter('fType','fTypeM');render()"><option value="">All</option></select></td>
-          <td class="c-kw"><select id="fKeyword" onchange="syncFilter('fKeyword','fKeywordM');render()"><option value="">— All keywords —</option></select></td>
-          <td class="c-st"><select id="fStatus" onchange="syncFilter('fStatus','fStatusM');render()"><option value="">All</option><option value="new">New</option><option value="re">Re-release</option></select></td>
+          <td class="c-cntry"><select id="fCountry" onchange="render()"><option value="">All</option></select></td>
+          <td class="c-type"><select id="fType"    onchange="render()"><option value="">All</option></select></td>
+          <td class="c-kw"><select id="fKeyword"  onchange="render()"><option value="">— All keywords —</option></select></td>
+          <td class="c-st"><select id="fStatus"   onchange="render()"><option value="">All</option><option value="new">New</option><option value="re">Re-release</option></select></td>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
@@ -366,131 +323,84 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
 
 <script>
 /* ═══════════════════════════════════════════════════════════
-   ALLOWED VALUES — do not change these lists
-   ─────────────────────────────────────────────────────────
-   TYPE (4 options only):
-     "Live Action" / "Documentary" / "Animation" / "Experimental"
-
-   KEYWORDS — pick up to 5 from this list per film:
-     가족 / 건축 / 교육 / 국가주의 / 국가폭력 / 꿈 / 노동 /
-     노인/고령화 / 농어촌 / 뉴노멀/팬데믹 / 다큐멘터리 / 덕후 /
-     도시/도시화 / 독재 / 동물 / 로드무비 / 모큐멘터리 / 모험 /
-     문학 / 미래 / 민주주의 / 범죄/폭력/테러 / 복수 / 빈곤/가난 /
-     사랑/연애/로맨스 / 사제관계 / 사회비판 / 서스펜스/미스터리 /
-     성장/청춘 / 스포츠 / 시위 / 신체 / 실험 / 실화 / 심리 /
-     아동 / 애니메이션 / 에로 / 여성 / 역사 / 연극/연기 /
-     영화에 관한 영화 / 예술/예술가 / 오디오 / 우정 / 음모 /
-     음식/술 / 음악/춤 / 이민/이주 / 인권 / 인종 /
-     인터넷/가상세계/첨단기술 / 자본주의/기업 / 자연/풍경 / 장애 /
-     재난/천재지변 / 전기/바이오 / 전쟁 / 전통문화 / 정치/저항 /
-     종교/심령 / 죽음 / 중년 / 추리/탐정 / 치유 /
-     코미디/유머/블랙코미디 / 투쟁 / 팀워크 / 판타지 / 평론 /
-     풍자 / 학교 / 혁명 / 호러/공포/고어 / 환경/생태 / 히어로 /
-     LGBTQ / SF / 4K 복원
-
+   ALLOWED VALUES
+   TYPE: "Live Action" / "Documentary" / "Animation" / "Experimental"
+   KEYWORDS: up to 5 per film, from the controlled list
    STATUS: "new" or "re"
-
-   LINK: URL string, or "" if not yet available
-═══════════════════════════════════════════════════════════ */
-
-/* ═══════════════════════════════════════════════════════════
-   HOW TO ADD DATA FROM GOOGLE SHEETS
-   ─────────────────────────────────────────────────────────
-   Your Google Sheet columns should be in this order:
-   A: title (English)
-   B: titleKo (Korean)
-   C: dirEn (Director, original language)
-   D: dirKo (Director, Korean)
-   E: cast (comma separated)
-   F: runtime (number, 0 if unknown)
-   G: country
-   H: type  (Live Action / Documentary / Animation / Experimental)
-   I: keywords (separate with | pipe character, e.g. 역사|전쟁|사회비판)
-   J: status  (new / re)
-   K: date  (YYYY-MM-DD)
-   L: pick  (TRUE / FALSE)
-   M: link  (URL or leave blank)
-
-   When you add a new week, copy the block below and fill in each film.
-   Each film is one { } block. Separate films with a comma.
+   LINK: URL or ""
 ═══════════════════════════════════════════════════════════ */
 
 var WEEKS = {
 
-  /* ── ADD NEW WEEKS AT THE TOP — copy/paste the block below ──
+  /* ── ADD NEW WEEKS AT THE TOP ──
   "YYYY-WXX": {
     label: "Mon DD – Mon DD, YYYY",
     movies: [
-      { title:"", titleKo:"", dirEn:"", dirKo:"", cast:"", runtime:0, country:"", type:"Live Action", keywords:["",""], status:"new", date:"YYYY-MM-DD", pick:false, link:"" },
+      { title:"", titleKo:"", dirEn:"", dirKo:"", cast:"", runtime:0, country:"", type:"Live Action", keywords:[""], status:"new", date:"YYYY-MM-DD", pick:false, link:"" },
     ]
-  },
-  ────────────────────────────────────────────────────────── */
+  }, */
 
   "2026-W20": {
     label: "May 12–18, 2026",
     movies: [
-    { title:"Teaching Practice: Idiot Girls and School Ghost 2",               titleKo:"교생실습",              dirEn:"Kim Min-ha",              dirKo:"김민하",        cast:"한선화, 홍예지, 이여름, 유선호",                  runtime:95,   country:"Korea",          type:"Live Action",  keywords:["학교","호러/공포/고어","코미디/유머/블랙코미디","성장/청춘"],              status:"new", date:"2026-05-13", pick:true,  link:"" },
-      { title:"The Last Breath",     titleKo:"데몬 샤크 헌터스", dirEn:"Lim Dae-hee",            dirKo:"요아힘 히데",        cast:"마동석, 서현, 이다윗",                            runtime:91,  country:"Korea",          type:"Live Action",  keywords:["종교/심령","범죄/폭력/테러","판타지","호러/공포/고어"],                   status:"new", date:"2026-05-13", pick:false, link:"" },
-      { title:"Michael",                       titleKo:"마이클",                dirEn:"Antoine Fuqua",           dirKo:"안톤 후쿠아",   cast:"Jaafar Jackson, Nia Long, Miles Teller, Colman Domingo", runtime:127, country:"USA",   type:"Live Action",  keywords:["음악/춤","전기/바이오","실화","예술/예술가"],                             status:"new", date:"2026-05-13", pick:false, link:"" },
-      { title:"Anselm",                        titleKo:"안젤름",                dirEn:"Wim Wenders",             dirKo:"빔 벤더스",     cast:"Anselm Kiefer",                                  runtime:93,  country:"Germany",        type:"Documentary",  keywords:["예술/예술가","역사","건축","4K 복원"],                                    status:"new", date:"2026-05-13", pick:true,  link:"" },
-      { title:"Little Sister",                 titleKo:"파티마가 사랑한 계절",  dirEn:"Hafsia Herzi",            dirKo:"합시아 헤르지", cast:"Nadia Melliti, 박지민",                           runtime:108, country:"France / Germany", type:"Live Action", keywords:["LGBTQ","사랑/연애/로맨스","성장/청춘","이민/이주","종교/심령"],            status:"new", date:"2026-05-13", pick:true,  link:"" },
-      { title:"Pierce",                        titleKo:"피어스",                dirEn:"Nelicia Low",             dirKo:"넬리시아 로우", cast:"조우녕, 류수보, 닝딩",                            runtime:105, country:"Taiwan / Singapore / Poland", type:"Live Action", keywords:["서스펜스/미스터리","심리","우정","범죄/폭력/테러"],  status:"new", date:"2026-05-13", pick:false, link:"" },
-      { title:"Dog Trainer",                   titleKo:"훈련사",                dirEn:"Seo Eun-seon",            dirKo:"서은선",        cast:"최승윤, 김승화, 정환",                            runtime:0,   country:"Korea",          type:"Live Action",  keywords:["심리","호러/공포/고어","여성","동물"],                                    status:"new", date:"2026-05-13", pick:false, link:"" },     
+      { title:"Teaching Practice: Idiot Girls and School Ghost 2",   titleKo:"교생실습",              dirEn:"Kim Min-ha",    dirKo:"김민하",        cast:"한선화, 홍예지, 이여름, 유선호",                         runtime:95,  country:"Korea",                       type:"Live Action",  keywords:["학교","호러/공포/고어","코미디/유머/블랙코미디","성장/청춘"],        status:"new", date:"2026-05-13", pick:true,  link:"" },
+      { title:"The Last Breath", titleKo:"데몬 샤크 헌터", dirEn:"Joachim Hedén",   dirKo:"요아킴 에",        cast:"Maxime Durand, Hayden Grech, Kim Spearman",                     runtime:91,  country:"Canada / United Kingdom",  type:"Live Action",  keywords:["범죄/폭력/테러","호러/공포/고어"],                                 status:"new", date:"2026-05-13", pick:false, link:"" },
+      { title:"Michael",           titleKo:"마이클",                dirEn:"Antoine Fuqua", dirKo:"안톤 후쿠아",    cast:"Jaafar Jackson, Nia Long, Miles Teller, Colman Domingo", runtime:127, country:"USA",                         type:"Live Action",  keywords:["음악/춤","전기/바이오","실화","예술/예술가"],                         status:"new", date:"2026-05-13", pick:false, link:"" },
+      { title:"Anselm",            titleKo:"안젤름",                dirEn:"Wim Wenders",   dirKo:"빔 벤더스",      cast:"Anselm Kiefer",                                          runtime:93,  country:"Germany",                     type:"Documentary",  keywords:["예술/예술가","역사","건축","4K 복원"],                               status:"new", date:"2026-05-13", pick:true,  link:"" },
+      { title:"Little Sister",     titleKo:"파티마가 사랑한 계절",  dirEn:"Hafsia Herzi",  dirKo:"합시아 헤르지",  cast:"Nadia Melliti, 박지민",                                  runtime:108, country:"France / Germany",             type:"Live Action",  keywords:["LGBTQ","사랑/연애/로맨스","성장/청춘","이민/이주","종교/심령"],      status:"new", date:"2026-05-13", pick:true,  link:"" },
+      { title:"Pierce",            titleKo:"피어스",                dirEn:"Nelicia Low",   dirKo:"넬리시아 로우",  cast:"조우녕, 류수보, 닝딩",                                   runtime:105, country:"Taiwan / Singapore / Poland",  type:"Live Action",  keywords:["서스펜스/미스터리","심리","우정","범죄/폭력/테러"],                   status:"new", date:"2026-05-13", pick:false, link:"" },
+      { title:"Wrangler",         titleKo:"훈련사",                dirEn:"Seo Eun-seon",  dirKo:"서은선",         cast:"최승윤, 김승화, 정환",                                   runtime:0,   country:"Korea",                       type:"Live Action",  keywords:["심리","호러/공포/고어","여성","동물"],                                status:"new", date:"2026-05-13", pick:false, link:"" },
     ]
   },
 
   "2026-W21": {
-    label: "May 19-25, 2026",
+    label: "May 19–25, 2026",
     movies: [
-      { title:"1026: For a New World",         titleKo:"1026: 새로운 세상을 위한", dirEn:"Choi Wi-an",           dirKo:"최위안",        cast:"권혁성, 김진환, 전노민, 최진호",                  runtime:0,   country:"Korea",          type:"Documentary",  keywords:["역사","정치/저항","독재","민주주의","실화"],                              status:"new", date:"2026-05-20", pick:false, link:"" },
-      { title:"Namtaeryeong",                  titleKo:"남태령",                dirEn:"Kim Hyun-ji",             dirKo:"김현지",        cast:"다큐멘터리",                                      runtime:0,   country:"Korea",          type:"Documentary",  keywords:["시위","정치/저항","민주주의","투쟁","실화"],                              status:"new", date:"2026-05-20", pick:false, link:"" },
-      { title:"Nirvanna the Band the Show",    titleKo:"너바나: 더 밴드",       dirEn:"Matt Johnson, Jay McCarrol", dirKo:"맷 존슨, 제이 맥캐롤", cast:"Matt Johnson, Jay McCarrol",         runtime:0,   country:"Canada",         type:"Live Action",  keywords:["코미디/유머/블랙코미디","음악/춤","우정","모험"],                         status:"new", date:"2026-05-20", pick:true,  link:"" },
-      { title:"Monkey King",                   titleKo:"반칙왕 몽키",           dirEn:"TBC",                     dirKo:"TBC",           cast:"TBC",                                            runtime:0,   country:"TBC",            type:"Animation",    keywords:["모험","판타지","코미디/유머/블랙코미디"],                                 status:"new", date:"2026-05-20", pick:false, link:"" },
-      { title:"Gintama: Yoshiwara Blaze",      titleKo:"신극장판 은혼: 요시와라 대염상", dirEn:"Ando Naoya",     dirKo:"안도 나오야",   cast:"Sugita Tomokazu",                                runtime:0,   country:"Japan",          type:"Animation",    keywords:["음악/춤","판타지","모험","애니메이션"],                                   status:"new", date:"2026-05-20", pick:false, link:"" },
-      { title:"Colony",                          titleKo:"군체",                   dirEn:"Yeon Sang-ho",            dirKo:"연상호",        cast:"전지현, 구교환, 지창욱, 신현빈, 고수",           runtime:0,   country:"Korea",                      type:"Live Action",  keywords:["재난/천재지변","호러/공포/고어","투쟁","SF","도시/도시화"],                status:"new", date:"2026-05-21", pick:true,  link:"" },
-         ]
+      { title:"1026: For a New World",      titleKo:"1026: 새로운 세상을 위한",       dirEn:"Choi Wi-an",              dirKo:"최위안",              cast:"권혁성, 김진환, 전노민, 최진호",       runtime:0, country:"Korea",  type:"Documentary", keywords:["역사","정치/저항","독재","민주주의","실화"],               status:"new", date:"2026-05-20", pick:false, link:"" },
+      { title:"Namtaeryeong",               titleKo:"남태령",                         dirEn:"Kim Hyun-ji",             dirKo:"김현지",              cast:"—",                                    runtime:0, country:"Korea",  type:"Documentary", keywords:["시위","정치/저항","민주주의","투쟁","실화"],               status:"new", date:"2026-05-20", pick:false, link:"" },
+      { title:"Nirvanna the Band the Show the Movie", titleKo:"너바나: 더 밴드",       dirEn:"Matt Johnson, Jay McCarrol", dirKo:"맷 존슨, 제이 맥캐롤", cast:"Matt Johnson, Jay McCarrol",        runtime:0, country:"Canada", type:"Live Action",  keywords:["코미디/유머/블랙코미디","음악/춤","우정","모험"],          status:"new", date:"2026-05-20", pick:true,  link:"" },
+      { title:"Monkey King",                titleKo:"반칙왕 몽키",                     dirEn:"TBC",                     dirKo:"TBC",                 cast:"TBC",                                  runtime:0, country:"TBC",    type:"Animation",   keywords:["모험","판타지","코미디/유머/블랙코미디"],                  status:"new", date:"2026-05-20", pick:false, link:"" },
+      { title:"Gintama: Yoshiwara Blaze",   titleKo:"신극장판 은혼: 요시와라 대염상", dirEn:"Ando Naoya",              dirKo:"안도 나오야",          cast:"Sugita Tomokazu",                      runtime:0, country:"Japan",  type:"Animation",   keywords:["음악/춤","판타지","모험","애니메이션"],                    status:"new", date:"2026-05-20", pick:false, link:"" },
+      { title:"Colony",                     titleKo:"군체",                            dirEn:"Yeon Sang-ho",            dirKo:"연상호",               cast:"전지현, 구교환, 지창욱, 신현빈, 고수", runtime:0, country:"Korea",  type:"Live Action",  keywords:["재난/천재지변","호러/공포/고어","투쟁","SF","도시/도시화"], status:"new", date:"2026-05-21", pick:true,  link:"" },
+    ]
   },
 
   "2026-W22": {
-    label: "May 26–Jun 1, 2026",
+    label: "May 26 – Jun 1, 2026",
     movies: [
-      { title:"Give Me a Ride",                  titleKo:"뒷자리에 태워줘",        dirEn:"TBC",                     dirKo:"TBC",           cast:"TBC",                                            runtime:0,   country:"Korea",                      type:"Live Action",  keywords:["사랑/연애/로맨스","성장/청춘","로드무비"],                                status:"new", date:"2026-05-27", pick:true,  link:"" },
-      { title:"Reminders of Him",                titleKo:"리마인더스 오브 힘",     dirEn:"Castille Landon",         dirKo:"캐스틸 랜던",   cast:"Nicholas Galitzine, Bella Ramsey",               runtime:0,   country:"USA",                        type:"Live Action",  keywords:["사랑/연애/로맨스","죽음","치유"],                                         status:"new", date:"2026-05-27", pick:false, link:"" },
-      { title:"The Mandalorian & Grogu",         titleKo:"만달로리안과 그로구",    dirEn:"Jon Favreau",             dirKo:"존 파브로",     cast:"Pedro Pascal",                                   runtime:0,   country:"USA",                        type:"Live Action",  keywords:["SF","히어로","미래"],                                                     status:"new", date:"2026-05-27", pick:true,  link:"" },
-      { title:"The Backrooms",                   titleKo:"백룸",                   dirEn:"Kane Parsons",            dirKo:"케인 파슨스",   cast:"Chiwetel Ejiofor, Renate Reinsve",               runtime:0,   country:"USA",                        type:"Live Action",  keywords:["호러/공포/고어","SF","서스펜스/미스터리","인터넷/가상세계/첨단기술"],      status:"new", date:"2026-05-27", pick:true,  link:"" },
-      { title:"Mr. Shota's Last Business Trip",  titleKo:"쇼타씨의 마지막 출장",  dirEn:"TBC",                     dirKo:"TBC",           cast:"TBC",                                            runtime:0,   country:"Japan",                      type:"Live Action",  keywords:["코미디/유머/블랙코미디","노동","죽음"],                                   status:"new", date:"2026-05-27", pick:false, link:"" },
-      { title:"Enzo",                            titleKo:"엔조",                   dirEn:"TBC",                     dirKo:"TBC",           cast:"TBC",                                            runtime:0,   country:"France",                     type:"Live Action",  keywords:["사랑/연애/로맨스","성장/청춘"],                                           status:"new", date:"2026-05-27", pick:false, link:"" },
-      { title:"Final Peace",                     titleKo:"파이널 피스",            dirEn:"TBC",                     dirKo:"TBC",           cast:"TBC",                                            runtime:0,   country:"TBC",                        type:"Live Action",  keywords:["서스펜스/미스터리","추리/탐정"],                                          status:"new", date:"2026-05-27", pick:false, link:"" },
-      { title:"Eureka",                          titleKo:"유레카",                 dirEn:"Lisandro Alonso",         dirKo:"리산드로 알론소", cast:"Viggo Mortensen, Chiara Mastroianni",           runtime:134, country:"France / Germany / Portugal", type:"Live Action",  keywords:["로드무비","인권","자연/풍경","실험"],                                     status:"new", date:"2026-05-27", pick:true,  link:"" },
-      { title:"Romeria",                         titleKo:"로메리아",               dirEn:"Carla Simón",             dirKo:"카를라 시몬",   cast:"TBC",                                            runtime:0,   country:"Spain",                      type:"Documentary",  keywords:["가족","전통문화","자연/풍경"],                                            status:"new", date:"2026-05-27", pick:true,  link:"" },
-      { title:"The Strange Candy Shop Zenitendo",titleKo:"이상한 과자가게 전천당", dirEn:"TBC",                     dirKo:"TBC",           cast:"라미란, 이레",                                   runtime:0,   country:"Korea",                      type:"Live Action",  keywords:["판타지","아동","문학"],                                                   status:"new", date:"2026-05-29", pick:false, link:"" },
+      { title:"Pillion",                         titleKo:"뒷자리에 태워줘",        dirEn:"Harry Lighton",              dirKo:"해리 라이",             cast:"Harry Melling, Alexander Skarsgård, Douglas Hodge",                                          runtime:106,   country:"Ireland, United Kingdom",                       type:"Live Action",  keywords:["사랑/연애/로맨스","LGBTQ"],                                status:"new", date:"2026-05-27", pick:true,  link:"" },
+      { title:"Reminders of Him",                titleKo:"리마인더스 오브 힘",     dirEn:"Castille Landon",  dirKo:"캐스틸 랜던",     cast:"Nicholas Galitzine, Bella Ramsey",             runtime:0,   country:"USA",                         type:"Live Action",  keywords:["사랑/연애/로맨스","죽음","치유"],                                         status:"new", date:"2026-05-27", pick:false, link:"" },
+      { title:"The Mandalorian & Grogu",         titleKo:"만달로리안과 그로구",    dirEn:"Jon Favreau",      dirKo:"존 파브로",        cast:"Pedro Pascal",                                 runtime:0,   country:"USA",                         type:"Live Action",  keywords:["SF","히어로","미래"],                                                     status:"new", date:"2026-05-27", pick:true,  link:"" },
+      { title:"The Backrooms",                   titleKo:"백룸",                   dirEn:"Kane Parsons",     dirKo:"케인 파슨스",      cast:"Chiwetel Ejiofor, Renate Reinsve",             runtime:0,   country:"USA",                         type:"Live Action",  keywords:["호러/공포/고어","SF","서스펜스/미스터리","인터넷/가상세계/첨단기술"],      status:"new", date:"2026-05-27", pick:true,  link:"" },
+      { title:"Mr. Shota's Last Business Trip",  titleKo:"쇼타씨의 마지막 출장",  dirEn:"TBC",              dirKo:"TBC",              cast:"TBC",                                          runtime:0,   country:"Japan",                        type:"Live Action",  keywords:["코미디/유머/블랙코미디","노동","죽음"],                                   status:"new", date:"2026-05-27", pick:false, link:"" },
+      { title:"Enzo",                            titleKo:"엔조",                   dirEn:"TBC",              dirKo:"TBC",              cast:"TBC",                                          runtime:0,   country:"France",                       type:"Live Action",  keywords:["사랑/연애/로맨스","성장/청춘"],                                           status:"new", date:"2026-05-27", pick:false, link:"" },
+      { title:"Final Peace",                     titleKo:"파이널 피스",            dirEn:"TBC",              dirKo:"TBC",              cast:"TBC",                                          runtime:0,   country:"TBC",                         type:"Live Action",  keywords:["서스펜스/미스터리","추리/탐정"],                                          status:"new", date:"2026-05-27", pick:false, link:"" },
+      { title:"Eureka",                          titleKo:"유레카",                 dirEn:"Lisandro Alonso",  dirKo:"리산드로 알론소",  cast:"Viggo Mortensen, Chiara Mastroianni",          runtime:134, country:"France / Germany / Portugal",  type:"Live Action",  keywords:["로드무비","인권","자연/풍경","실험"],                                     status:"new", date:"2026-05-27", pick:true,  link:"" },
+      { title:"Romeria",                         titleKo:"로메리아",               dirEn:"Carla Simón",      dirKo:"카를라 시몬",      cast:"TBC",                                          runtime:0,   country:"Spain",                        type:"Documentary",  keywords:["가족","전통문화","자연/풍경"],                                            status:"new", date:"2026-05-27", pick:true,  link:"" },
+      { title:"Strange Snack Shop Jeoncheondang",titleKo:"이상한 과자가게 전천당", dirEn:"Park Bong-seop",              dirKo:"박봉섭",              cast:"라미란, 이레",                                 runtime:0,   country:"Korea",                        type:"Live Action",  keywords:["판타지","아동","문학"],                                                   status:"new", date:"2026-05-29", pick:false, link:"" },
     ]
   },
 
   "2026-W23": {
-    label: "Jun 2-8, 2026",
+    label: "Jun 2–8, 2026",
     movies: [
-      { title:"Afternoon of Solitude", titleKo:"고독의 오후", dirEn:"Albert Serra",  dirKo:"알베르트 세라", cast:"Adama Balde",                        runtime:0, country:"France / Spain / Portugal", type:"Documentary", keywords:["동물","예술/예술가","자연/풍경","실험"],          status:"new", date:"2026-06-03", pick:true,  link:"" },
-      { title:"Wild Thing",            titleKo:"와일드씽",   dirEn:"Son Jae-gon",   dirKo:"손재곤",        cast:"강동원, 엄태구, 박지현, 오정세",      runtime:0, country:"Korea",                     type:"Live Action", keywords:["음악/춤","코미디/유머/블랙코미디","예술/예술가"], status:"new", date:"2026-06-03", pick:true,  link:"" },     
+      { title:"Afternoon of Solitude", titleKo:"고독의 오후", dirEn:"Albert Serra", dirKo:"알베르트 세라", cast:"Adama Balde",                   runtime:0, country:"France / Spain / Portugal", type:"Documentary", keywords:["동물","예술/예술가","자연/풍경","실험"],          status:"new", date:"2026-06-03", pick:true,  link:"" },
+      { title:"Wild Thing",            titleKo:"와일드씽",   dirEn:"Son Jae-gon",  dirKo:"손재곤",        cast:"강동원, 엄태구, 박지현, 오정세", runtime:0, country:"Korea",                     type:"Live Action", keywords:["음악/춤","코미디/유머/블랙코미디","예술/예술가"], status:"new", date:"2026-06-03", pick:true,  link:"" },
     ]
   },
 
   "2026-W24": {
-    label: "Jun 9-17, 2026",
+    label: "Jun 9–17, 2026",
     movies: [
-      { title:"Disclosure Day",  titleKo:"디스클로저 데이", dirEn:"Steven Spielberg", dirKo:"스티븐 스필버그", cast:"Emily Blunt, Josh O'Connor, Colin Firth", runtime:0, country:"USA",   type:"Live Action", keywords:["SF","서스펜스/미스터리","인터넷/가상세계/첨단기술"], status:"new", date:"2026-06-10", pick:true,  link:"" },
-      { title:"Sheep in the Box", titleKo:"상자 속의 양",  dirEn:"TBC",              dirKo:"TBC",             cast:"TBC",                                    runtime:0, country:"TBC",   type:"Live Action", keywords:["서스펜스/미스터리","심리","아동"],                   status:"new", date:"2026-06-10", pick:true,  link:"" },
-      { title:"La Grande Illusion", titleKo:"위대한 환상", dirEn:"Jean Renoir",      dirKo:"장 르누아르",     cast:"Jean Gabin, Erich von Stroheim, Pierre Fresnay", runtime:114, country:"France", type:"Live Action", keywords:["전쟁","인권","역사","4K 복원"],           status:"re",  date:"2026-06-10", pick:false, link:"" },
-      { title:"Wanted",           titleKo:"현상수배",       dirEn:"TBC",              dirKo:"TBC",             cast:"TBC",                                    runtime:0, country:"TBC",   type:"Live Action", keywords:["범죄/폭력/테러","서스펜스/미스터리","추리/탐정"],   status:"new", date:"2026-06-10", pick:false, link:"" },
-      { title:"Toy Story 5", titleKo:"토이스토리 5", dirEn:"Andrew Stanton", dirKo:"앤드루 스탠튼", cast:"Tom Hanks, Tim Allen", runtime:0, country:"USA", type:"Animation", keywords:["가족","우정","애니메이션","모험"], status:"new", date:"2026-06-17", pick:true, link:"" },
+      { title:"Disclosure Day",    titleKo:"디스클로저 데이", dirEn:"Steven Spielberg", dirKo:"스티븐 스필버그", cast:"Emily Blunt, Josh O'Connor, Colin Firth",        runtime:0,   country:"USA",   type:"Live Action", keywords:["SF","서스펜스/미스터리","인터넷/가상세계/첨단기술"], status:"new", date:"2026-06-10", pick:true,  link:"" },
+      { title:"Sheep in the Box",  titleKo:"상자 속의 양",   dirEn:"TBC",              dirKo:"TBC",             cast:"TBC",                                           runtime:0,   country:"TBC",   type:"Live Action", keywords:["서스펜스/미스터리","심리","아동"],                   status:"new", date:"2026-06-10", pick:true,  link:"" },
+      { title:"La Grande Illusion",titleKo:"위대한 환상",    dirEn:"Jean Renoir",      dirKo:"장 르누아르",     cast:"Jean Gabin, Erich von Stroheim, Pierre Fresnay", runtime:114, country:"France", type:"Live Action", keywords:["전쟁","인권","역사","4K 복원"],                     status:"re",  date:"2026-06-10", pick:false, link:"" },
+      { title:"Wanted",            titleKo:"현상수배",        dirEn:"TBC",              dirKo:"TBC",             cast:"TBC",                                           runtime:0,   country:"TBC",   type:"Live Action", keywords:["범죄/폭력/테러","서스펜스/미스터리","추리/탐정"],   status:"new", date:"2026-06-10", pick:false, link:"" },
+      { title:"Toy Story 5",       titleKo:"토이스토리 5",    dirEn:"Andrew Stanton",   dirKo:"앤드루 스탠튼",   cast:"Tom Hanks, Tim Allen",                          runtime:0,   country:"USA",   type:"Animation",   keywords:["가족","우정","애니메이션","모험"],                   status:"new", date:"2026-06-17", pick:true,  link:"" },
     ]
   },
 
 }; /* ← END OF WEEKS */
-
-/* Note: W20 (May 12–18) has no releases — W19 films opening May 13–21 appear in W19.
-   W21 covers May 29 release. W22 covers Jun 3. W24 covers Jun 10. W25 covers Jun 17. */
-
 
 var SPECIAL = [
   { venueKo:"아트하우스 모모", venueEn:"Arthouse Momo",    type:"t", open:false, programs:[
@@ -513,20 +423,16 @@ var SPECIAL = [
     { name:"상영 중인 작품", dates:"2026.04.28–05.13", open:true, films:[
       { title:"Pina",                titleKo:"피나",         dirEn:"Wim Wenders",    dirKo:"빔 벤더스",       runtime:106, screenDates:"Apr 28–", note:"",              link:"" },
       { title:"Ran 12.3",            titleKo:"란 12.3",      dirEn:"Akira Kurosawa", dirKo:"구로사와 아키라", runtime:162, screenDates:"Apr 28–", note:"4K restoration", link:"" },
-      { title:"The Days of Theater", titleKo:"극장의 시간들", dirEn:"Lee Jong-un",    dirKo:"이종언",           runtime:95,  screenDates:"– May 7", note:"Closing soon",   link:"" },
+      { title:"The Days of Theater", titleKo:"극장의 시간들", dirEn:"Lee Jong-un",    dirKo:"이종언",          runtime:95,  screenDates:"– May 7", note:"Closing soon",   link:"" },
     ]},
   ]},
-  { venueKo:"한국영상자료원",   venueEn:"KOFA Cinematheque", type:"c", open:true,  programs:[
-    { name:"트립 시네마: 물질, 접속, 조립", dates:"2026.04.28–05.30", open:true, films:[
-      { title:"Altered States",        titleKo:"상태 개조",             dirEn:"Ken Russell",            dirKo:"켄 러셀",             runtime:102, screenDates:"Apr 28 16:00", note:"D-Cinema", link:"" },
-      { title:"Spring Breakers (4K)",  titleKo:"스프링 브레이커즈",     dirEn:"Harmony Korine",         dirKo:"하모니 코린",          runtime:94,  screenDates:"Apr 28 19:00", note:"4K",       link:"" },
-      { title:"Jacob's Ladder (4K)",   titleKo:"야곱의 사다리",          dirEn:"Adrian Lyne",            dirKo:"에이드리언 라인",      runtime:114, screenDates:"Apr 29 16:00", note:"4K",       link:"" },
-      { title:"Speed Racer",           titleKo:"스피드 레이서",          dirEn:"Lilly & Lana Wachowski", dirKo:"릴리·라나 워쇼스키",  runtime:133, screenDates:"Apr 29 19:00", note:"D-Cinema", link:"" },
-      { title:"2001: A Space Odyssey", titleKo:"2001 스페이스 오디세이", dirEn:"Stanley Kubrick",        dirKo:"스탠리 큐브릭",        runtime:149, screenDates:"Apr 30 15:30", note:"",         link:"" },
-    ]},
-    { name:"고다르 회고전", dates:"2026.01.10–02.28", open:false, films:[
-      { title:"Breathless", titleKo:"네 멋대로 해라", dirEn:"Jean-Luc Godard", dirKo:"장 뤽 고다르", runtime:90,  screenDates:"Jan 10,13,17", note:"35mm",        link:"" },
-      { title:"Contempt",   titleKo:"경멸",           dirEn:"Jean-Luc Godard", dirKo:"장 뤽 고다르", runtime:103, screenDates:"Jan 20,24",    note:"DCP restored", link:"" },
+  { venueKo:"한국영상자료원",   venueEn:"KOFA Cinematheque", type:"c", open:false, programs:[
+    { name:"트립 시네마: 물질, 접속, 조립", dates:"2026.04.28–05.30", open:false, films:[
+      { title:"Altered States",        titleKo:"상태 개조",             dirEn:"Ken Russell",            dirKo:"켄 러셀",            runtime:102, screenDates:"Apr 28 16:00", note:"D-Cinema", link:"" },
+      { title:"Spring Breakers (4K)",  titleKo:"스프링 브레이커즈",     dirEn:"Harmony Korine",         dirKo:"하모니 코린",         runtime:94,  screenDates:"Apr 28 19:00", note:"4K",       link:"" },
+      { title:"Jacob's Ladder (4K)",   titleKo:"야곱의 사다리",          dirEn:"Adrian Lyne",            dirKo:"에이드리언 라인",     runtime:114, screenDates:"Apr 29 16:00", note:"4K",       link:"" },
+      { title:"Speed Racer",           titleKo:"스피드 레이서",          dirEn:"Lilly & Lana Wachowski", dirKo:"릴리·라나 워쇼스키", runtime:133, screenDates:"Apr 29 19:00", note:"D-Cinema", link:"" },
+      { title:"2001: A Space Odyssey", titleKo:"2001 스페이스 오디세이", dirEn:"Stanley Kubrick",        dirKo:"스탠리 큐브릭",       runtime:149, screenDates:"Apr 30 15:30", note:"",         link:"" },
     ]},
   ]},
   { venueKo:"라이카시네마",     venueEn:"Laika Cinema",      type:"c", open:false, programs:[
@@ -544,7 +450,7 @@ var SPECIAL = [
 ];
 
 /* ═══════════════════════════════
-   APP LOGIC — do not edit below
+   APP LOGIC
 ═══════════════════════════════ */
 var activeMain='r', activeWeek='2026-W20';
 var sortKey='date', sortDir=1, dirEdits={}, myPicks={};
@@ -554,15 +460,14 @@ function wLabel(k){ return WEEKS[k].label; }
 function init(){
   document.getElementById('mDate').textContent=
     new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  document.getElementById('cnt-s').textContent=
-    SPECIAL.reduce(function(a,v){return a+v.programs.reduce(function(b,p){return b+p.films.length;},0);},0);
-  document.getElementById('cnt-f').textContent=0;
+  var cs=document.getElementById('cnt-s');
+  if(cs) cs.textContent=SPECIAL.reduce(function(a,v){return a+v.programs.reduce(function(b,p){return b+p.films.length;},0);},0);
   buildArch(); buildFilters(); render(); buildSp(); updateMyTab();
 }
 
 function sw(t){
   activeMain=t;
-  ['r','s','m','f'].forEach(function(x){
+  ['r','s','f','m'].forEach(function(x){
     document.getElementById('tab-'+x).classList.toggle('on',x===t);
     document.getElementById('v-'+x).style.display=x===t?'block':'none';
   });
@@ -570,7 +475,7 @@ function sw(t){
 }
 
 function buildArch(){
-  var keys = Object.keys(WEEKS).sort(function(a,b){ return b.localeCompare(a); });
+  var keys=Object.keys(WEEKS).sort(function(a,b){return a.localeCompare(b);});
   document.getElementById('archBar').innerHTML=keys.map(function(k){
     return '<div class="atab'+(k===activeWeek?' on':'')+'" onclick="switchWk(\''+k+'\')">'+wLabel(k)+'</div>';
   }).join('');
@@ -586,25 +491,14 @@ function allMovies(){
   return all;
 }
 
-function isMobile(){ return window.innerWidth <= 640; }
-
-function syncFilter(masterId, mirrorId){
-  var master = document.getElementById(masterId);
-  var mirror = document.getElementById(mirrorId);
-  if(master && mirror) mirror.value = master.value;
-}
-
 function buildFilters(){
   var pool=allMovies();
   var cs=[...new Set(pool.map(function(m){return m.country;}).filter(Boolean))].sort();
   var ts=[...new Set(pool.map(function(m){return m.type;}).filter(Boolean))].sort();
   var ks=[...new Set(pool.reduce(function(a,m){return a.concat(m.keywords);},[])) ].sort(function(a,b){return a.localeCompare(b,'ko');});
-  var cOpts='<option value="">All</option>'+cs.map(function(c){return'<option value="'+c+'">'+c+'</option>';}).join('');
-  var tOpts='<option value="">All</option>'+ts.map(function(t){return'<option value="'+t+'">'+t+'</option>';}).join('');
-  var kOpts='<option value="">— All keywords —</option>'+ks.map(function(k){return'<option value="'+k+'">'+k+'</option>';}).join('');
-  ['fCountry','fCountryM'].forEach(function(id){ var el=document.getElementById(id); if(el) el.innerHTML=cOpts; });
-  ['fType','fTypeM'].forEach(function(id){ var el=document.getElementById(id); if(el) el.innerHTML=tOpts; });
-  ['fKeyword','fKeywordM'].forEach(function(id){ var el=document.getElementById(id); if(el) el.innerHTML=kOpts; });
+  document.getElementById('fCountry').innerHTML='<option value="">All</option>'+cs.map(function(c){return'<option value="'+c+'">'+c+'</option>';}).join('');
+  document.getElementById('fType').innerHTML='<option value="">All</option>'+ts.map(function(t){return'<option value="'+t+'">'+t+'</option>';}).join('');
+  document.getElementById('fKeyword').innerHTML='<option value="">— All keywords —</option>'+ks.map(function(k){return'<option value="'+k+'">'+k+'</option>';}).join('');
 }
 
 function getFilt(){
@@ -624,26 +518,23 @@ function getFilt(){
   });
 }
 
-function filmRow(m, wk, idx, searching){
+function isMobile(){ return window.innerWidth<=640; }
+
+function filmRow(m,wk,idx,searching){
   var rk=wk+'-'+idx;
   var dk=dirEdits[rk]!==undefined?dirEdits[rk]:m.dirKo;
   var rt=m.runtime>0?m.runtime:'—', isMy=!!myPicks[rk];
   var rc=m.pick&&isMy?'bothpick':m.pick?'epick':isMy?'mpick':'';
-  var titleHtml;
-  if(m.link){
-    titleHtml='<a class="title-link" href="'+m.link+'" target="_blank" rel="noopener">'
-      +'<div class="tm">'+m.title+' <span class="title-link-icon">↗</span></div>'
-      +'<div class="ts">'+m.titleKo+'</div></a>';
-  } else {
-    titleHtml='<div class="tm">'+m.title+'</div><div class="ts">'+m.titleKo+'</div>';
-  }
+  var titleHtml=m.link
+    ?'<a class="title-link" href="'+m.link+'" target="_blank" rel="noopener"><div class="tm">'+m.title+' <span class="title-link-icon">↗</span></div><div class="ts">'+m.titleKo+'</div></a>'
+    :'<div class="tm">'+m.title+'</div><div class="ts">'+m.titleKo+'</div>';
   return '<tr class="'+rc+'">'
     +'<td class="c-pick">'+(m.pick?'<span class="pbadge">PICK</span>':'')+'</td>'
     +'<td class="c-mypick"><span class="mypick-btn '+(isMy?'on':'off')+'" onclick="toggleMy(\''+rk+'\')">'+(isMy?'★':'☆')+'</span></td>'
     +'<td class="c-rel dtcell">'+m.date+(searching?'<div class="week-src">'+wLabel(wk)+'</div>':'')+'</td>'
     +'<td class="c-title">'+titleHtml+'</td>'
     +'<td class="c-cast" style="font-size:13px;color:var(--text2);">'+m.cast+'</td>'
-    +'<td class="c-dir"><div class="den">'+m.dirEn+'</div><div class="dko" id="dk-'+rk+'">'+dk+'</div></td>'
+    +'<td class="c-dir"><div class="den">'+m.dirEn+'</div><div class="dko">'+dk+'</div></td>'
     +'<td class="c-rt" style="font-size:13px;color:var(--text2);">'+rt+'</td>'
     +'<td class="c-cntry cntry-cell">'+m.country+'</td>'
     +'<td class="c-type"><span class="tpill">'+m.type+'</span></td>'
@@ -652,7 +543,7 @@ function filmRow(m, wk, idx, searching){
     +'</tr>';
 }
 
-function filmCard(m, wk, idx, searching){
+function filmCard(m,wk,idx,searching){
   var rk=wk+'-'+idx;
   var isMy=!!myPicks[rk];
   var rc=m.pick&&isMy?'bothpick':m.pick?'epick':isMy?'mpick':'';
@@ -661,53 +552,43 @@ function filmCard(m, wk, idx, searching){
     ?'<a class="title-link" href="'+m.link+'" target="_blank" rel="noopener"><div class="tm">'+m.title+' <span class="title-link-icon">↗</span></div><div class="ts">'+m.titleKo+'</div></a>'
     :'<div class="tm">'+m.title+'</div><div class="ts">'+m.titleKo+'</div>';
   return '<div class="film-card '+rc+'">'
-    +'<div class="card-top">'
-    +'<div class="card-title-wrap">'+titleInner+'</div>'
-    +'<div class="card-actions">'
-    +(m.pick?'<span class="pbadge">PICK</span>':'')
-    +'<span class="card-mypick '+(isMy?'on':'off')+'" onclick="toggleMy(\''+rk+'\')">'+(isMy?'★':'☆')+'</span>'
-    +'</div></div>'
+    +'<div class="card-top"><div class="card-title-wrap">'+titleInner+'</div>'
+    +'<div class="card-actions">'+(m.pick?'<span class="pbadge">PICK</span>':'')
+    +'<span class="card-mypick '+(isMy?'on':'off')+'" onclick="toggleMy(\''+rk+'\')">'+(isMy?'★':'☆')+'</span></div></div>'
     +'<div class="card-dir"><span class="den">'+m.dirEn+'</span>'+(m.dirKo?' <span class="dko">/ '+m.dirKo+'</span>':'')+'</div>'
     +'<div class="card-meta">'
-    +'<div class="card-meta-item"><span class="card-meta-label">Release</span>'+m.date+'</div>'
-    +'<div class="card-meta-item"><span class="card-meta-label">Country</span>'+m.country+'</div>'
-    +'<div class="card-meta-item"><span class="card-meta-label">Runtime</span>'+rt+'</div>'
-    +'<div class="card-meta-item"><span class="card-meta-label">Type</span>'+m.type+'</div>'
+    +'<div class="card-meta-item"><span class="card-meta-lbl">Release</span>'+m.date+'</div>'
+    +'<div class="card-meta-item"><span class="card-meta-lbl">Country</span>'+m.country+'</div>'
+    +'<div class="card-meta-item"><span class="card-meta-lbl">Runtime</span>'+rt+'</div>'
+    +'<div class="card-meta-item"><span class="card-meta-lbl">Type</span>'+m.type+'</div>'
     +'</div>'
     +'<div class="card-kw">'+m.keywords.map(function(k){return'<span class="kpill">'+k+'</span>';}).join('')+'</div>'
-    +'<div class="card-badges">'
-    +'<span class="badge '+(m.status==='new'?'bnew':'bre')+'">'+(m.status==='new'?'NEW':'RE')+'</span>'
-    +(searching?'<span class="week-src-card">'+wLabel(wk)+'</span>':'')
-    +'</div>'
+    +'<div class="card-badges"><span class="badge '+(m.status==='new'?'bnew':'bre')+'">'+(m.status==='new'?'NEW':'RE')+'</span>'
+    +(searching?'<span class="week-src-card">'+wLabel(wk)+'</span>':'')+'</div>'
     +'</div>';
 }
 
 function render(){
   var q=document.getElementById('srch').value.trim();
   var data=getFilt(), searching=q.length>0;
-  var scope=document.getElementById('scopeLabel');
-  scope.innerHTML=searching
+  document.getElementById('scopeLabel').innerHTML=searching
     ?'Searching <span>all weeks</span> · '+data.length+' result'+(data.length!==1?'s':'')
     :'Showing <span>'+wLabel(activeWeek)+'</span>';
   document.getElementById('cnt-r').textContent=WEEKS[activeWeek].movies.length;
   document.getElementById('rcnt').textContent=data.length+' of '+(searching?allMovies().length+' total films':WEEKS[activeWeek].movies.length+' titles this week');
   var noRes=document.getElementById('nores');
-  if(!data.length){
-    document.getElementById('tbody').innerHTML='';
-    document.getElementById('cardList').innerHTML='';
-    noRes.style.display='block'; return;
-  }
+  if(!data.length){ document.getElementById('tbody').innerHTML=''; document.getElementById('cardList').innerHTML=''; noRes.style.display='block'; return; }
   noRes.style.display='none';
   if(isMobile()){
     document.getElementById('tbody').innerHTML='';
     document.getElementById('cardList').innerHTML=data.map(function(m){
-      var wk=m._week||activeWeek, idx=m._idx!==undefined?m._idx:WEEKS[activeWeek].movies.indexOf(m);
+      var wk=m._week||activeWeek,idx=m._idx!==undefined?m._idx:WEEKS[activeWeek].movies.indexOf(m);
       return filmCard(m,wk,idx,searching);
     }).join('');
   } else {
     document.getElementById('cardList').innerHTML='';
     document.getElementById('tbody').innerHTML=data.map(function(m){
-      var wk=m._week||activeWeek, idx=m._idx!==undefined?m._idx:WEEKS[activeWeek].movies.indexOf(m);
+      var wk=m._week||activeWeek,idx=m._idx!==undefined?m._idx:WEEKS[activeWeek].movies.indexOf(m);
       return filmRow(m,wk,idx,searching);
     }).join('');
   }
@@ -719,112 +600,49 @@ function updateMyTab(){ document.getElementById('cnt-m').textContent=Object.keys
 function renderMyPicks(){
   var keys=Object.keys(myPicks);
   document.getElementById('mycnt').textContent=keys.length+' film'+(keys.length!==1?'s':'')+' saved';
-  if(!keys.length){
-    document.getElementById('mybody').innerHTML='';
-    var cl=document.getElementById('mycardList'); if(cl) cl.innerHTML='';
-    document.getElementById('myEmpty').style.display='block'; return;
-  }
+  if(!keys.length){ document.getElementById('mybody').innerHTML=''; var cl=document.getElementById('mycardList'); if(cl)cl.innerHTML=''; document.getElementById('myEmpty').style.display='block'; return; }
   document.getElementById('myEmpty').style.display='none';
-  var rows=keys.map(function(rk){
-    var p=rk.split('-'),wk=p[0]+'-'+p[1],idx=parseInt(p[2]);
-    var m=WEEKS[wk]&&WEEKS[wk].movies[idx]; if(!m)return'';
-    return isMobile()?filmCard(m,wk,idx,true):filmRow(m,wk,idx,true);
-  }).join('');
-  if(isMobile()){
-    document.getElementById('mybody').innerHTML='';
-    var cl=document.getElementById('mycardList'); if(cl) cl.innerHTML=rows;
-  } else {
-    document.getElementById('mybody').innerHTML=rows;
-    var cl=document.getElementById('mycardList'); if(cl) cl.innerHTML='';
-  }
-}
-
-function editDk(rk){
-  var el=document.getElementById('dk-'+rk),cur=el.textContent;
-  el.innerHTML='<input type="text" value="'+cur+'" style="width:100%;font-size:12px;padding:2px 4px;border:.5px solid #d0cfc8;border-radius:4px;background:#fff;color:#1a1a18;font-family:\'Noto Serif KR\',serif;outline:none;" onblur="saveDk(\''+rk+'\',this.value)" onkeydown="if(event.key===\'Enter\')this.blur()"/>';
-  el.querySelector('input').focus();
-}
-function saveDk(rk,val){
-  dirEdits[rk]=val;
-  var p=rk.split('-'); WEEKS[p[0]+'-'+p[1]].movies[parseInt(p[2])].dirKo=val; render();
+  var rows=keys.map(function(rk){ var p=rk.split('-'),wk=p[0]+'-'+p[1],idx=parseInt(p[2]); var m=WEEKS[wk]&&WEEKS[wk].movies[idx]; if(!m)return''; return isMobile()?filmCard(m,wk,idx,true):filmRow(m,wk,idx,true); }).join('');
+  if(isMobile()){ document.getElementById('mybody').innerHTML=''; var cl=document.getElementById('mycardList'); if(cl)cl.innerHTML=rows; }
+  else { document.getElementById('mybody').innerHTML=rows; var cl=document.getElementById('mycardList'); if(cl)cl.innerHTML=''; }
 }
 
 function srt(k){
   if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=1;}
   document.querySelectorAll('th').forEach(function(t){t.classList.remove('srt');});
   document.querySelectorAll('.si').forEach(function(i){i.textContent='↕';});
-  var el=document.getElementById('s-'+k);
-  if(el){el.closest('th').classList.add('srt');el.textContent=sortDir===1?'↑':'↓';}
-  render();
+  var el=document.getElementById('s-'+k); if(el){el.closest('th').classList.add('srt');el.textContent=sortDir===1?'↑':'↓';} render();
 }
 
-function mkXLrow(m,wk,rk){
-  return [m.pick?'PICK':'', myPicks[rk]?'★':'', m.date, m.title, m.titleKo, m.cast,
-          m.dirEn, dirEdits[rk]||m.dirKo, m.runtime||'', m.country, m.type,
-          m.keywords.join(' | '), m.status==='new'?'New Release':'Re-release', wLabel(wk), m.link||''];
-}
+function mkXLrow(m,wk,rk){ return [m.pick?'PICK':'',myPicks[rk]?'★':'',m.date,m.title,m.titleKo,m.cast,m.dirEn,dirEdits[rk]||m.dirKo,m.runtime||'',m.country,m.type,m.keywords.join(' | '),m.status==='new'?'New Release':'Re-release',wLabel(wk),m.link||'']; }
 function exportXL(){
-  var data=getFilt();
-  var rows=[['Editor Pick','My Pick','Release','Title (EN)','Title (KO)','Cast','Director (EN)','Director (KO)','Min','Country','Type','Keywords','Status','Week','Link']];
-  data.forEach(function(m){
-    var wk=m._week||activeWeek, idx=m._idx!==undefined?m._idx:WEEKS[activeWeek].movies.indexOf(m);
-    rows.push(mkXLrow(m,wk,wk+'-'+idx));
-  });
-  var ws=XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols']=[8,6,12,20,18,22,18,16,6,10,12,28,12,18,30].map(function(w){return{wch:w};});
-  var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Films'); XLSX.writeFile(wb,'이번주뭐볼까.xlsx');
+  var data=getFilt(); var rows=[['Editor Pick','My Pick','Release','Title (EN)','Title (KO)','Cast','Director (EN)','Director (KO)','Min','Country','Type','Keywords','Status','Week','Link']];
+  data.forEach(function(m){ var wk=m._week||activeWeek,idx=m._idx!==undefined?m._idx:WEEKS[activeWeek].movies.indexOf(m); rows.push(mkXLrow(m,wk,wk+'-'+idx)); });
+  var ws=XLSX.utils.aoa_to_sheet(rows); ws['!cols']=[8,6,12,20,18,22,18,16,6,10,12,28,12,18,30].map(function(w){return{wch:w};}); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Films'); XLSX.writeFile(wb,'이번주뭐볼까.xlsx');
 }
 function exportMyXL(){
-  var keys=Object.keys(myPicks); if(!keys.length)return;
-  var rows=[['Editor Pick','Release','Title (EN)','Title (KO)','Cast','Director (EN)','Min','Country','Type','Keywords','Status','Week','Link']];
-  keys.forEach(function(rk){
-    var p=rk.split('-'),wk=p[0]+'-'+p[1],idx=parseInt(p[2]),m=WEEKS[wk]&&WEEKS[wk].movies[idx]; if(!m)return;
-    rows.push(mkXLrow(m,wk,rk).slice(1));
-  });
-  var ws=XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols']=[8,12,20,18,22,18,6,10,12,28,12,18,30].map(function(w){return{wch:w};});
-  var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'My Picks'); XLSX.writeFile(wb,'내picks.xlsx');
+  var keys=Object.keys(myPicks); if(!keys.length)return; var rows=[['Editor Pick','Release','Title (EN)','Title (KO)','Cast','Director (EN)','Min','Country','Type','Keywords','Status','Week','Link']];
+  keys.forEach(function(rk){ var p=rk.split('-'),wk=p[0]+'-'+p[1],idx=parseInt(p[2]),m=WEEKS[wk]&&WEEKS[wk].movies[idx]; if(!m)return; rows.push(mkXLrow(m,wk,rk).slice(1)); });
+  var ws=XLSX.utils.aoa_to_sheet(rows); ws['!cols']=[8,12,20,18,22,18,6,10,12,28,12,18,30].map(function(w){return{wch:w};}); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'My Picks'); XLSX.writeFile(wb,'내picks.xlsx');
 }
 
 function buildSp(){
   document.getElementById('spContent').innerHTML=SPECIAL.map(function(v,vi){
-    var tc=v.type==='c'?'vt-c':'vt-t', tl=v.type==='c'?'Cinematheque':'Theater';
+    var tc=v.type==='c'?'vt-c':'vt-t',tl=v.type==='c'?'Cinematheque':'Theater';
     var progs=v.programs.map(function(p,pi){
       var hdrs='<div class="film-grid-hdr"><div class="fghdr">Title</div><div class="fghdr">Director</div><div class="fghdr fg-dates">Dates</div><div class="fghdr" style="text-align:right;padding-right:8px;">Min</div><div class="fghdr">Note</div></div>';
       var rows=p.films.map(function(f){
-        var tCell=f.link
-          ?'<a href="'+f.link+'" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;"><div class="tm">'+f.title+' <span style="font-size:10px;color:var(--text3);">↗</span></div><div class="ts">'+f.titleKo+'</div></a>'
-          :'<div class="tm">'+f.title+'</div><div class="ts">'+f.titleKo+'</div>';
-        return '<div class="film-grid-row">'
-          +'<div class="fg-cell">'+tCell+'</div>'
-          +'<div class="fg-cell"><div class="den">'+f.dirEn+'</div><div class="dko">'+f.dirKo+'</div></div>'
-          +'<div class="fg-cell fg-dates">'+f.screenDates+'</div>'
-          +'<div class="fg-cell fg-rt">'+(f.runtime||'—')+'</div>'
-          +'<div class="fg-cell fg-note">'+f.note+'</div>'
-          +'</div>';
+        var tCell=f.link?'<a href="'+f.link+'" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;"><div class="tm">'+f.title+' <span style="font-size:10px;color:var(--text3);">↗</span></div><div class="ts">'+f.titleKo+'</div></a>':'<div class="tm">'+f.title+'</div><div class="ts">'+f.titleKo+'</div>';
+        return '<div class="film-grid-row"><div class="fg-cell">'+tCell+'</div><div class="fg-cell"><div class="den">'+f.dirEn+'</div><div class="dko">'+f.dirKo+'</div></div><div class="fg-cell fg-dates">'+f.screenDates+'</div><div class="fg-cell fg-rt">'+(f.runtime||'—')+'</div><div class="fg-cell fg-note">'+f.note+'</div></div>';
       }).join('');
-      return '<div class="prog-block"><div class="prog-hdr" onclick="toggleProg('+vi+','+pi+')">'
-        +'<span class="prog-arrow'+(p.open?' open':'')+'" id="pa-'+vi+'-'+pi+'">▶</span>'
-        +'<span class="prog-name">'+p.name+'</span><span class="prog-dates">'+p.dates+'</span></div>'
-        +'<div class="prog-films'+(p.open?' open':'')+'" id="pf-'+vi+'-'+pi+'">'+hdrs+rows+'</div></div>';
+      return '<div class="prog-block"><div class="prog-hdr" onclick="toggleProg('+vi+','+pi+')"><span class="prog-arrow'+(p.open?' open':'')+'" id="pa-'+vi+'-'+pi+'">▶</span><span class="prog-name">'+p.name+'</span><span class="prog-dates">'+p.dates+'</span></div><div class="prog-films'+(p.open?' open':'')+'" id="pf-'+vi+'-'+pi+'">'+hdrs+rows+'</div></div>';
     }).join('');
-    return '<div class="venue-block"><div class="venue-hdr" onclick="toggleVenue('+vi+')">'
-      +'<span class="venue-arrow'+(v.open?' open':'')+'" id="va-'+vi+'">▶</span>'
-      +'<div><div class="venue-name-ko">'+v.venueKo+'</div><div class="venue-name-en">'+v.venueEn+'</div></div>'
-      +'<span class="venue-tag '+tc+'">'+tl+'</span></div>'
-      +'<div class="venue-body'+(v.open?' open':'')+'" id="vb-'+vi+'">'+progs+'</div></div>';
+    return '<div class="venue-block"><div class="venue-hdr" onclick="toggleVenue('+vi+')"><span class="venue-arrow'+(v.open?' open':'')+'" id="va-'+vi+'">▶</span><div><div class="venue-name-ko">'+v.venueKo+'</div><div class="venue-name-en">'+v.venueEn+'</div></div><span class="venue-tag '+tc+'">'+tl+'</span></div><div class="venue-body'+(v.open?' open':'')+'" id="vb-'+vi+'">'+progs+'</div></div>';
   }).join('');
 }
-function toggleVenue(vi){
-  SPECIAL[vi].open=!SPECIAL[vi].open;
-  document.getElementById('vb-'+vi).classList.toggle('open',SPECIAL[vi].open);
-  document.getElementById('va-'+vi).classList.toggle('open',SPECIAL[vi].open);
-}
-function toggleProg(vi,pi){
-  SPECIAL[vi].programs[pi].open=!SPECIAL[vi].programs[pi].open;
-  document.getElementById('pf-'+vi+'-'+pi).classList.toggle('open',SPECIAL[vi].programs[pi].open);
-  document.getElementById('pa-'+vi+'-'+pi).classList.toggle('open',SPECIAL[vi].programs[pi].open);
-}
+function toggleVenue(vi){ SPECIAL[vi].open=!SPECIAL[vi].open; document.getElementById('vb-'+vi).classList.toggle('open',SPECIAL[vi].open); document.getElementById('va-'+vi).classList.toggle('open',SPECIAL[vi].open); }
+function toggleProg(vi,pi){ SPECIAL[vi].programs[pi].open=!SPECIAL[vi].programs[pi].open; document.getElementById('pf-'+vi+'-'+pi).classList.toggle('open',SPECIAL[vi].programs[pi].open); document.getElementById('pa-'+vi+'-'+pi).classList.toggle('open',SPECIAL[vi].programs[pi].open); }
+
 init();
 window.addEventListener('resize', function(){ render(); });
 </script>
