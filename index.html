@@ -188,6 +188,15 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
 .fg-note { color:var(--text3); font-size:12px; font-style:italic; }
 .fg-rt { color:var(--text2); text-align:right; padding-right:8px!important; font-size:12px; }
 .fg-dates { color:var(--text2); font-size:12px; }
+/* AUTH */
+.auth-bar { display:flex; align-items:center; gap:8px; margin-top:10px; justify-content:flex-end; }
+.auth-btn { font-size:11px; font-family:Helvetica,Arial,sans-serif; font-weight:600; padding:5px 12px; border:1px solid rgba(255,255,255,.2); border-radius:20px; background:transparent; color:rgba(255,255,255,.7); cursor:pointer; letter-spacing:.04em; transition:all .15s; white-space:nowrap; }
+.auth-btn:hover { background:rgba(255,255,255,.1); color:#fff; border-color:rgba(255,255,255,.4); }
+.auth-btn.signed-in { border-color:var(--gold); color:var(--gold); }
+.auth-btn.signed-in:hover { background:var(--gold-bg); }
+.auth-avatar { width:24px; height:24px; border-radius:50%; border:1.5px solid var(--gold); }
+.auth-name { font-size:11px; color:rgba(255,255,255,.5); max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
 /* FESTIVAL */
 .fest-type-badge { font-size:9px; font-weight:700; padding:2px 8px; border-radius:20px; letter-spacing:.08em; margin-right:8px; flex-shrink:0; }
 .ft-comp    { background:var(--dark); color:var(--gold); }
@@ -272,6 +281,11 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
     <div class="mast-right">
       <div class="mast-issue">Issue No. <span id="issueNo">19</span></div>
       <div class="mast-date" id="mDate"></div>
+      <div class="auth-bar">
+        <img class="auth-avatar" id="authAvatar" src="" alt="" style="display:none;">
+        <span class="auth-name" id="authName"></span>
+        <button class="auth-btn" id="authBtn" onclick="authAction()">Sign in with Google</button>
+      </div>
     </div>
   </div>
   <div class="mast-tabs">
@@ -831,8 +845,89 @@ function calFilmClick(titleKo){
   render();
 }
 
-/* ── PICKS ──────────────────────────────────────────────── */
-function toggleMy(rk){ myPicks[rk]=!myPicks[rk]; if(!myPicks[rk])delete myPicks[rk]; updateMyTab(); render(); }
+/* ── PICKS + FIREBASE ───────────────────────────────────── */
+var currentUser = null;
+var _db = null, _auth = null, _provider = null, _firebaseReady = false;
+
+var FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyAhD8xXRMNNXArGyKF2SeJJ1eStztXa-CQ",
+  authDomain:        "wtwcinema-b92a8.firebaseapp.com",
+  projectId:         "wtwcinema-b92a8",
+  storageBucket:     "wtwcinema-b92a8.firebasestorage.app",
+  messagingSenderId: "1059041455640",
+  appId:             "1:1059041455640:web:e993ff709bee140827dd6d",
+  measurementId:     "G-VNRS9QBLE7"
+};
+
+function initFirebase(){
+  try {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    _auth     = firebase.auth();
+    _db       = firebase.firestore();
+    _provider = new firebase.auth.GoogleAuthProvider();
+    _firebaseReady = true;
+
+    _auth.onAuthStateChanged(function(user){
+      currentUser = user;
+      if(user){
+        document.getElementById('authBtn').textContent = 'Sign out';
+        document.getElementById('authBtn').classList.add('signed-in');
+        var av = document.getElementById('authAvatar');
+        if(user.photoURL){ av.src = user.photoURL; av.style.display = 'block'; }
+        document.getElementById('authName').textContent = user.displayName || user.email;
+        loadPicksFromFirebase(user.uid);
+      } else {
+        document.getElementById('authBtn').textContent = 'Sign in with Google';
+        document.getElementById('authBtn').classList.remove('signed-in');
+        document.getElementById('authAvatar').style.display = 'none';
+        document.getElementById('authName').textContent = '';
+        myPicks = loadPicksLocal();
+        updateMyTab(); render();
+      }
+    });
+  } catch(e){
+    console.warn('Firebase init failed — using localStorage:', e);
+    myPicks = loadPicksLocal();
+  }
+}
+
+function authAction(){
+  if(!_firebaseReady){ alert('Firebase가 아직 초기화되지 않았습니다.'); return; }
+  if(currentUser){ _auth.signOut(); }
+  else { _auth.signInWithPopup(_provider).catch(function(e){ console.error('Sign-in error:', e); }); }
+}
+
+function loadPicksFromFirebase(uid){
+  _db.collection('users').doc(uid).collection('picks').doc('mypicks')
+    .get()
+    .then(function(doc){
+      myPicks = (doc.exists && doc.data().picks) ? doc.data().picks : {};
+      updateMyTab(); render();
+    })
+    .catch(function(){ myPicks = loadPicksLocal(); updateMyTab(); render(); });
+}
+
+function savePicksToFirebase(){
+  savePicksLocal();
+  if(!_firebaseReady || !currentUser) return;
+  _db.collection('users').doc(currentUser.uid).collection('picks').doc('mypicks')
+    .set({ picks: myPicks, updatedAt: firebase.firestore.FieldValue.serverTimestamp() })
+    .catch(function(e){ console.warn('Firestore save failed:', e); });
+}
+
+function savePicksLocal(){
+  try { localStorage.setItem('mwb_picks', JSON.stringify(myPicks)); } catch(e){}
+}
+function loadPicksLocal(){
+  try { return JSON.parse(localStorage.getItem('mwb_picks') || '{}'); } catch(e){ return {}; }
+}
+
+function toggleMy(rk){
+  myPicks[rk]=!myPicks[rk];
+  if(!myPicks[rk]) delete myPicks[rk];
+  updateMyTab(); render();
+  savePicksToFirebase();
+}
 function updateMyTab(){ document.getElementById('cnt-m').textContent=Object.keys(myPicks).length; }
 
 function renderMyPicks(){
@@ -1121,5 +1216,11 @@ function toggleFest(fi){
 init();
 window.addEventListener('resize', function(){ render(); });
 </script>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>initFirebase();</script>
 </body>
 </html>
