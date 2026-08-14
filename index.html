@@ -565,6 +565,59 @@ var SPECIAL = [
   },
 ];
 
+/* ═══════════════════════════════════════════════════════════
+   GOOGLE SHEETS LIVE DATA LOADER
+═══════════════════════════════════════════════════════════ */
+var SHEET_API_URL = "https://script.google.com/macros/s/AKfycbw8Xy6SgvjV86YGxExjIqFVtukZ54kRC-jvHu1-Wx6SCIfb9BieMXprWVWWWPmLMlCrWQ/exec";
+
+var WEEK_LABELS = {
+  "2026-W20": "May 12–18, 2026",
+  "2026-W21": "May 19–25, 2026",
+  "2026-W22": "May 26 – Jun 1, 2026",
+  "2026-W23": "Jun 2–8, 2026",
+  "2026-W24": "Jun 9–17, 2026",
+  /* 새 주차 추가 시 여기에 레이블 추가 */
+};
+
+function loadSheetData(){
+  /* 아카이브 바에 로딩 표시 */
+  var arch = document.getElementById('archBar');
+  if(arch) arch.innerHTML = '<div style="font-size:12px;color:rgba(255,255,255,.3);padding:8px 14px;">Loading…</div>';
+
+  fetch(SHEET_API_URL)
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(data.status !== 200 || !data.weeks) throw new Error(data.error || "bad response");
+
+      /* Sheet 데이터로 WEEKS 교체 */
+      var sheetWeeks = {};
+      Object.keys(data.weeks).sort().forEach(function(wk){
+        sheetWeeks[wk] = {
+          label:  WEEK_LABELS[wk] || wk,
+          movies: data.weeks[wk]
+        };
+      });
+
+      if(Object.keys(sheetWeeks).length > 0){
+        /* WEEKS 전역 변수 교체 */
+        Object.keys(WEEKS).forEach(function(k){ delete WEEKS[k]; });
+        Object.keys(sheetWeeks).forEach(function(k){ WEEKS[k] = sheetWeeks[k]; });
+
+        /* 가장 최근 주차를 기본으로 */
+        var keys = Object.keys(WEEKS).sort();
+        activeWeek = keys[keys.length - 1];
+      }
+    })
+    .catch(function(err){
+      console.warn("Sheet 로드 실패 — 하드코딩 데이터 사용:", err);
+    })
+    .finally(function(){
+      buildArch();
+      buildFilters();
+      render();
+    });
+}
+
 /* ═══════════════════════════════
    APP LOGIC
 ═══════════════════════════════ */
@@ -581,7 +634,7 @@ function init(){
   if(cs) cs.textContent = SPECIAL.reduce(function(a,v){return a+v.programs.reduce(function(b,p){return b+p.films.length;},0);},0);
   var now = new Date();
   calYear = now.getFullYear(); calMonth = now.getMonth();
-  buildArch(); buildFilters(); render(); buildSp(); updateMyTab();
+  loadSheetData(); buildSp(); updateMyTab();
 }
 
 function sw(t){
