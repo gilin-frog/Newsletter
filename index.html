@@ -400,86 +400,11 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
 </div>
 <script>
 /* ═══════════════════════════════════════════════════════════
-   DATA
-   ─────────────────────────────────────────────────────────
-   NEW FIELD: comment — editor's short note, shown in italics
-   under the title. Leave "" if no comment.
-   Example: comment:"올해 가장 기다린 작품. 놓치지 마세요."
+   WEEKS — Google Sheet에서 자동으로 채워집니다.
+   직접 편집하지 마세요. Sheet의 approved 컬럼을 TRUE로
+   설정하면 자동으로 반영됩니다.
 ═══════════════════════════════════════════════════════════ */
-var WEEKS = {
-
-  /* ── ADD NEW WEEKS AT THE TOP ──
-  "YYYY-WXX": {
-    label: "Mon DD – Mon DD, YYYY",
-    movies: [
-      { title:"", titleKo:"", dirEn:"", dirKo:"", cast:"",
-        runtime:0, country:"", type:"Live Action",
-        keywords:[""], status:"new", date:"YYYY-MM-DD",
-        pick:false, link:"", comment:"" },
-    ]
-  }, */
-
-  "2026-W20": {
-    label: "May 12–18, 2026",
-    movies: [
-      { title:"Student Teacher",        titleKo:"교생실습",              dirEn:"Kim Min-ha",    dirKo:"김민하",       cast:"한선화, 홍예지, 이여름, 유선호",                          runtime:95,  country:"Korea",                      type:"Live Action",  keywords:["학교","호러/공포/고어","코미디/유머/블랙코미디","성장/청춘"],  status:"new", date:"2026-05-13", pick:true,  link:"", comment:"전작보다 더 대담해진 김민하의 공포 코미디." },
-      { title:"Holy Night: Demon Hunters",titleKo:"거룩한 밤: 데몬 헌터스",dirEn:"Lim Dae-hee",dirKo:"임대희",      cast:"마동석, 서현, 이다윗",                                    runtime:91,  country:"Korea",                      type:"Live Action",  keywords:["종교/심령","범죄/폭력/테러","판타지","호러/공포/고어"],       status:"new", date:"2026-05-13", pick:false, link:"", comment:"" },
-      { title:"Michael",                titleKo:"마이클",                dirEn:"Antoine Fuqua", dirKo:"안톤 후쿠아",  cast:"Jaafar Jackson, Nia Long, Miles Teller, Colman Domingo", runtime:127, country:"USA",                        type:"Live Action",  keywords:["음악/춤","전기/바이오","실화","예술/예술가"],                 status:"new", date:"2026-05-13", pick:false, link:"", comment:"" },
-      { title:"Anselm",                 titleKo:"안젤름",                dirEn:"Wim Wenders",   dirKo:"빔 벤더스",    cast:"Anselm Kiefer",                                          runtime:93,  country:"Germany",                    type:"Documentary",  keywords:["예술/예술가","역사","건축","4K 복원"],                        status:"new", date:"2026-05-13", pick:true,  link:"", comment:"빔 벤더스가 기록한 안젤름 키퍼의 세계 — 묵직하고 아름답다." },
-      { title:"Little Sister",          titleKo:"파티마가 사랑한 계절",  dirEn:"Hafsia Herzi",  dirKo:"합시아 헤르지",cast:"Nadia Melliti, 박지민",                                  runtime:108, country:"France / Germany",            type:"Live Action",  keywords:["LGBTQ","사랑/연애/로맨스","성장/청춘","이민/이주","종교/심령"],status:"new", date:"2026-05-13", pick:true,  link:"", comment:"칸 퀴어 종려상 수상작. 조용하지만 강렬한 첫사랑의 기록." },
-      { title:"Pierce",                 titleKo:"피어스",                dirEn:"Nelicia Low",   dirKo:"넬리시아 로우",cast:"조우녕, 류수보, 닝딩",                                   runtime:105, country:"Taiwan / Singapore / Poland", type:"Live Action",  keywords:["서스펜스/미스터리","심리","우정","범죄/폭력/테러"],           status:"new", date:"2026-05-13", pick:false, link:"", comment:"" },
-      { title:"Dog Trainer",            titleKo:"훈련사",                dirEn:"Seo Eun-seon",  dirKo:"서은선",       cast:"최승윤, 김승화, 정환",                                   runtime:0,   country:"Korea",                      type:"Live Action",  keywords:["심리","호러/공포/고어","여성","동물"],                        status:"new", date:"2026-05-13", pick:false, link:"", comment:"" },
-    ]
-  },
-
-  "2026-W21": {
-    label: "May 19–25, 2026",
-    movies: [
-      { title:"1026: For a New World",      titleKo:"1026: 새로운 세상을 위한",       dirEn:"Choi Wi-an",              dirKo:"최위안",              cast:"권혁성, 김진환, 전노민, 최진호",  runtime:0, country:"Korea",  type:"Documentary", keywords:["역사","정치/저항","독재","민주주의","실화"],               status:"new", date:"2026-05-20", pick:false, link:"", comment:"" },
-      { title:"Namtaeryeong",               titleKo:"남태령",                          dirEn:"Kim Hyun-ji",             dirKo:"김현지",              cast:"—",                               runtime:0, country:"Korea",  type:"Documentary", keywords:["시위","정치/저항","민주주의","투쟁","실화"],               status:"new", date:"2026-05-20", pick:false, link:"", comment:"" },
-      { title:"Nirvanna the Band the Show", titleKo:"너바나: 더 밴드",                 dirEn:"Matt Johnson, Jay McCarrol",dirKo:"맷 존슨, 제이 맥캐롤",cast:"Matt Johnson, Jay McCarrol",   runtime:0, country:"Canada", type:"Live Action",  keywords:["코미디/유머/블랙코미디","음악/춤","우정","모험"],          status:"new", date:"2026-05-20", pick:true,  link:"", comment:"밴드인 척 살아온 두 친구의 황당한 실화. 웃기고 따뜻하다." },
-      { title:"Monkey King",                titleKo:"반칙왕 몽키",                     dirEn:"TBC",                     dirKo:"TBC",                 cast:"TBC",                             runtime:0, country:"TBC",    type:"Animation",   keywords:["모험","판타지","코미디/유머/블랙코미디"],                  status:"new", date:"2026-05-20", pick:false, link:"", comment:"" },
-      { title:"Gintama: Yoshiwara Blaze",   titleKo:"신극장판 은혼: 요시와라 대염상", dirEn:"Ando Naoya",              dirKo:"안도 나오야",          cast:"Sugita Tomokazu",                 runtime:0, country:"Japan",  type:"Animation",   keywords:["음악/춤","판타지","모험","애니메이션"],                    status:"new", date:"2026-05-20", pick:false, link:"", comment:"" },
-      { title:"Colony",                     titleKo:"군체",                            dirEn:"Yeon Sang-ho",            dirKo:"연상호",               cast:"전지현, 구교환, 지창욱, 신현빈, 고수",runtime:0,country:"Korea",type:"Live Action", keywords:["재난/천재지변","호러/공포/고어","투쟁","SF","도시/도시화"],status:"new", date:"2026-05-21", pick:true,  link:"", comment:"연상호 특유의 디스토피아 세계관 — 스케일이 다르다." },
-    ]
-  },
-
-  "2026-W22": {
-    label: "May 26 – Jun 1, 2026",
-    movies: [
-      { title:"Give Me a Ride",                  titleKo:"뒷자리에 태워줘",        dirEn:"TBC",             dirKo:"TBC",            cast:"TBC",                                          runtime:0,   country:"Korea",                       type:"Live Action",  keywords:["사랑/연애/로맨스","성장/청춘","로드무비"],                    status:"new", date:"2026-05-27", pick:true,  link:"", comment:"" },
-      { title:"Reminders of Him",                titleKo:"리마인더스 오브 힘",     dirEn:"Castille Landon", dirKo:"캐스틸 랜던",    cast:"Nicholas Galitzine, Bella Ramsey",             runtime:0,   country:"USA",                         type:"Live Action",  keywords:["사랑/연애/로맨스","죽음","치유"],                             status:"new", date:"2026-05-27", pick:false, link:"", comment:"" },
-      { title:"The Mandalorian & Grogu",         titleKo:"만달로리안과 그로구",    dirEn:"Jon Favreau",     dirKo:"존 파브로",       cast:"Pedro Pascal",                                 runtime:0,   country:"USA",                         type:"Live Action",  keywords:["SF","히어로","미래"],                                         status:"new", date:"2026-05-27", pick:true,  link:"", comment:"극장판으로 확장된 만달로리안 세계관. 시리즈 팬이라면 필수." },
-      { title:"The Backrooms",                   titleKo:"백룸",                   dirEn:"Kane Parsons",    dirKo:"케인 파슨스",     cast:"Chiwetel Ejiofor, Renate Reinsve",             runtime:0,   country:"USA",                         type:"Live Action",  keywords:["호러/공포/고어","SF","서스펜스/미스터리","인터넷/가상세계/첨단기술"],status:"new",date:"2026-05-27",pick:true, link:"", comment:"인터넷 밈에서 출발한 공포 — 기대 이상의 완성도." },
-      { title:"Mr. Shota's Last Business Trip",  titleKo:"쇼타씨의 마지막 출장",  dirEn:"TBC",             dirKo:"TBC",             cast:"TBC",                                          runtime:0,   country:"Japan",                        type:"Live Action",  keywords:["코미디/유머/블랙코미디","노동","죽음"],                       status:"new", date:"2026-05-27", pick:false, link:"", comment:"" },
-      { title:"Enzo",                            titleKo:"엔조",                   dirEn:"TBC",             dirKo:"TBC",             cast:"TBC",                                          runtime:0,   country:"France",                      type:"Live Action",  keywords:["사랑/연애/로맨스","성장/청춘"],                               status:"new", date:"2026-05-27", pick:false, link:"", comment:"" },
-      { title:"Final Peace",                     titleKo:"파이널 피스",            dirEn:"TBC",             dirKo:"TBC",             cast:"TBC",                                          runtime:0,   country:"TBC",                         type:"Live Action",  keywords:["서스펜스/미스터리","추리/탐정"],                              status:"new", date:"2026-05-27", pick:false, link:"", comment:"" },
-      { title:"Eureka",                          titleKo:"유레카",                 dirEn:"Lisandro Alonso", dirKo:"리산드로 알론소", cast:"Viggo Mortensen, Chiara Mastroianni",          runtime:134, country:"France / Germany / Portugal",  type:"Live Action",  keywords:["로드무비","인권","자연/풍경","실험"],                         status:"new", date:"2026-05-27", pick:true,  link:"", comment:"리산드로 알론소 특유의 긴 호흡. 비고 모텐센과의 조합이 인상적." },
-      { title:"Romeria",                         titleKo:"로메리아",               dirEn:"Carla Simón",     dirKo:"카를라 시몬",     cast:"TBC",                                          runtime:0,   country:"Spain",                        type:"Documentary",  keywords:["가족","전통문화","자연/풍경"],                                status:"new", date:"2026-05-27", pick:true,  link:"", comment:"«여름 1993》의 카를라 시몬 신작 다큐. 가족과 땅의 기억." },
-      { title:"The Strange Candy Shop Zenitendo",titleKo:"이상한 과자가게 전천당", dirEn:"TBC",             dirKo:"TBC",             cast:"라미란, 이레",                                 runtime:0,   country:"Korea",                        type:"Live Action",  keywords:["판타지","아동","문학"],                                       status:"new", date:"2026-05-29", pick:false, link:"", comment:"" },
-    ]
-  },
-
-  "2026-W23": {
-    label: "Jun 2–8, 2026",
-    movies: [
-      { title:"Afternoon of Solitude", titleKo:"고독의 오후", dirEn:"Albert Serra", dirKo:"알베르트 세라", cast:"Adama Balde",              runtime:0, country:"France / Spain / Portugal", type:"Documentary", keywords:["동물","예술/예술가","자연/풍경","실험"],           status:"new", date:"2026-06-03", pick:true,  link:"", comment:"투우사의 고독을 담은 알베르트 세라의 명상적 다큐멘터리." },
-      { title:"Wild Thing",            titleKo:"와일드씽",   dirEn:"Son Jae-gon",  dirKo:"손재곤",        cast:"강동원, 엄태구, 박지현, 오정세",runtime:0,country:"Korea",                    type:"Live Action", keywords:["음악/춤","코미디/유머/블랙코미디","예술/예술가"],  status:"new", date:"2026-06-03", pick:true,  link:"", comment:"강동원의 밴드 코미디 — 예상보다 훨씬 재밌다." },
-    ]
-  },
-
-  "2026-W24": {
-    label: "Jun 9–17, 2026",
-    movies: [
-      { title:"Disclosure Day",    titleKo:"디스클로저 데이", dirEn:"Steven Spielberg", dirKo:"스티븐 스필버그", cast:"Emily Blunt, Josh O'Connor, Colin Firth",        runtime:0,   country:"USA",   type:"Live Action", keywords:["SF","서스펜스/미스터리","인터넷/가상세계/첨단기술"], status:"new", date:"2026-06-10", pick:true,  link:"", comment:"스필버그의 귀환 — 외계 생명체 공개를 다룬 정치 스릴러." },
-      { title:"Sheep in the Box",  titleKo:"상자 속의 양",   dirEn:"TBC",              dirKo:"TBC",             cast:"TBC",                                           runtime:0,   country:"TBC",   type:"Live Action", keywords:["서스펜스/미스터리","심리","아동"],                   status:"new", date:"2026-06-10", pick:true,  link:"", comment:"" },
-      { title:"La Grande Illusion",titleKo:"위대한 환상",    dirEn:"Jean Renoir",      dirKo:"장 르누아르",     cast:"Jean Gabin, Erich von Stroheim, Pierre Fresnay", runtime:114, country:"France", type:"Live Action", keywords:["전쟁","인권","역사","4K 복원"],                     status:"re",  date:"2026-06-10", pick:false, link:"", comment:"" },
-      { title:"Wanted",            titleKo:"현상수배",        dirEn:"TBC",              dirKo:"TBC",             cast:"TBC",                                           runtime:0,   country:"TBC",   type:"Live Action", keywords:["범죄/폭력/테러","서스펜스/미스터리","추리/탐정"],   status:"new", date:"2026-06-10", pick:false, link:"", comment:"" },
-      { title:"Toy Story 5",       titleKo:"토이스토리 5",    dirEn:"Andrew Stanton",   dirKo:"앤드루 스탠튼",   cast:"Tom Hanks, Tim Allen",                          runtime:0,   country:"USA",   type:"Animation",   keywords:["가족","우정","애니메이션","모험"],                   status:"new", date:"2026-06-17", pick:true,  link:"", comment:"우디와 버즈의 귀환. 온 가족이 함께." },
-    ]
-  },
-
-}; /* ← END OF WEEKS */
+var WEEKS = {};  /* ← Sheet에서 로드됨 */
 
 var SPECIAL = [
   {
