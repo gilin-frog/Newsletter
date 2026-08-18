@@ -213,7 +213,9 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
   .mast { padding:24px 20px 0; }
   .mast-ko { font-size:26px; }
   .mast-note { font-size:13px; max-width:100%; }
-  .mast-right { display:none; }
+  .mast-right .mast-issue,
+  .mast-right .mast-date { display:none; }
+  .auth-bar { justify-content:flex-start; margin-top:8px; }
   .mtab { font-size:12px; padding:10px 14px; }
   .arch { padding:0 20px; }
   .sbar { padding:12px 20px; gap:6px; }
@@ -493,19 +495,28 @@ var SPECIAL = [
 /* ═══════════════════════════════════════════════════════════
    GOOGLE SHEETS LIVE DATA LOADER
 ═══════════════════════════════════════════════════════════ */
-var SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzpBa00aBxj_dxlEp6sBszSxj_Ko4_CL7d9uYtOU6up1n9asX_Hs47KROpFJ55lPRehbQ/exec";
+var SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwEifbvkGJCMwNVDVCO5Ex899bb2eubmmwXMCegT8hIJgapqiXA-l7_OhOfomBsvoq4jQ/exec";
 
-var WEEK_LABELS = {
-  "2026-W20": "May 12–18, 2026",
-  "2026-W21": "May 19–25, 2026",
-  "2026-W22": "May 26 – Jun 1, 2026",
-  "2026-W23": "Jun 2–8, 2026",
-  "2026-W24": "Jun 9–17, 2026",
-  /* 새 주차 추가 시 여기에 레이블 추가 */
+var MONTH_LABELS = {
+  "2026-05": "2026년 5월",
+  "2026-06": "2026년 6월",
+  "2026-07": "2026년 7월",
+  "2026-08": "2026년 8월",
+  "2026-09": "2026년 9월",
+  "2026-10": "2026년 10월",
+  "2026-11": "2026년 11월",
+  "2026-12": "2026년 12월",
 };
 
+function monthLabel(k){
+  if(MONTH_LABELS[k]) return MONTH_LABELS[k];
+  // 자동 생성: "YYYY-MM" → "YYYY년 M월"
+  var parts = k.split("-");
+  if(parts.length === 2) return parts[0] + "년 " + parseInt(parts[1]) + "월";
+  return k;
+}
+
 function loadSheetData(){
-  /* 아카이브 바에 로딩 표시 */
   var arch = document.getElementById('archBar');
   if(arch) arch.innerHTML = '<div style="font-size:12px;color:rgba(255,255,255,.3);padding:8px 14px;">Loading…</div>';
 
@@ -514,27 +525,26 @@ function loadSheetData(){
     .then(function(data){
       if(data.status !== 200 || !data.weeks) throw new Error(data.error || "bad response");
 
-      /* Sheet 데이터로 WEEKS 교체 */
       var sheetWeeks = {};
       Object.keys(data.weeks).sort().forEach(function(wk){
         sheetWeeks[wk] = {
-          label:  WEEK_LABELS[wk] || wk,
-          movies: data.weeks[wk]
+          label:  monthLabel(wk),
+          movies: data.weeks[wk].map(function(m){
+            // comment 필드 보존 (Sheet P열에서 옴)
+            return m;
+          })
         };
       });
 
       if(Object.keys(sheetWeeks).length > 0){
-        /* WEEKS 전역 변수 교체 */
         Object.keys(WEEKS).forEach(function(k){ delete WEEKS[k]; });
         Object.keys(sheetWeeks).forEach(function(k){ WEEKS[k] = sheetWeeks[k]; });
-
-        /* 가장 최근 주차를 기본으로 */
         var keys = Object.keys(WEEKS).sort();
         activeWeek = keys[keys.length - 1];
       }
     })
     .catch(function(err){
-      console.warn("Sheet 로드 실패 — 하드코딩 데이터 사용:", err);
+      console.warn("Sheet 로드 실패:", err);
     })
     .finally(function(){
       buildArch();
@@ -546,11 +556,11 @@ function loadSheetData(){
 /* ═══════════════════════════════
    APP LOGIC
 ═══════════════════════════════ */
-var activeMain='r', activeWeek='2026-W20';
+var activeMain='r', activeWeek='2026-05';
 var sortKey='date', sortDir=1, myPicks={};
 var calYear, calMonth;
 
-function wLabel(k){ return WEEKS[k] ? WEEKS[k].label : k; }
+function wLabel(k){ return WEEKS[k] ? WEEKS[k].label : monthLabel(k); }
 
 function init(){
   document.getElementById('mDate').textContent =
@@ -859,8 +869,11 @@ function initFirebase(){
         document.getElementById('authBtn').classList.remove('signed-in');
         document.getElementById('authAvatar').style.display = 'none';
         document.getElementById('authName').textContent = '';
-        myPicks = loadPicksLocal();
-        updateMyTab(); render();
+        // 로그아웃 시 picks 완전 초기화
+        myPicks = {};
+        savePicksLocal(); // localStorage도 비우기
+        updateMyTab();
+        render();
       }
     });
   } catch(e){
