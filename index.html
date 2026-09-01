@@ -204,7 +204,15 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
 .ft-special { background:#E6F1FB; color:#0C447C; }
 .fest-period   { font-size:11px; color:var(--gold); font-weight:600; white-space:nowrap; }
 .fest-location { font-size:11px; color:var(--text3); white-space:nowrap; margin-left:8px; }
-.fest-placeholder { padding:48px 36px; text-align:center; color:var(--text3); font-size:14px; line-height:1.8; }
+.fest-status-badge { font-size:9px; font-weight:700; padding:2px 8px; border-radius:20px; letter-spacing:.06em; margin-right:6px; flex-shrink:0; }
+.fsb-active   { background:#d4edda; color:#155724; }
+.fsb-upcoming { background:#E6F1FB; color:#0C447C; }
+.fsb-past     { background:var(--bg3); color:var(--text3); border:.5px solid var(--border2); }
+.fest-group-label { font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--text3); padding:16px 0 6px; border-bottom:.5px solid var(--border); margin-bottom:8px; }
+.fest-others-wrap { margin-top:12px; border:.5px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+.fest-others-hdr { display:flex; align-items:center; gap:8px; padding:13px 18px; background:var(--bg2); cursor:pointer; user-select:none; transition:background .12s; }
+.fest-others-hdr:hover { background:var(--bg3); }
+#festOtherBody { padding:8px 0; }
 
 /* ── RESPONSIVE ─────────────────────────────────────────── */
 @media (max-width:900px){
@@ -495,7 +503,7 @@ var SPECIAL = [
 /* ═══════════════════════════════════════════════════════════
    GOOGLE SHEETS LIVE DATA LOADER
 ═══════════════════════════════════════════════════════════ */
-var SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzOkwRT25Pd-IqjpB7vNos6O6QlQoSnKpx5u65MWSlWFy7EOgah2V7DPow1eAuzvOf-Jg/exec";
+var SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwGdeqhsbRGH2ad8oog_4lW65HJDRgQlB45U66mKoc-WwNuUBHSZV5WDRe5kUVJHdmt9w/exec";
 
 var MONTH_NAMES = ["January","February","March","April","May","June",
                    "July","August","September","October","November","December"];
@@ -1017,8 +1025,10 @@ function toggleProg(vi,pi){
 /* ═══════════════════════════════════════════════════════════
    FESTIVALS DATA
    ─────────────────────────────────────────────────────────
+   status: "active"   — 진행 중 (상단 노출, 기본 펼침)
+           "upcoming" — 예정 (접힌 섹션으로 묶임)
+           "past"     — 종료 (접힌 섹션으로 묶임)
    section.type: "competition" / "non-competition" / "special"
-   Add new festivals at the top. Sections sorted by importance.
 ═══════════════════════════════════════════════════════════ */
 var FESTIVALS = [
 
@@ -1028,6 +1038,7 @@ var FESTIVALS = [
     period: "2026.05.13 – 05.24",
     location: "Cannes, France",
     siteUrl: "https://www.festival-cannes.com/",
+    status: "past",
     open: false,
     sections: [
       { name: "황금종려상 경쟁", type: "competition", films: [] },
@@ -1043,6 +1054,7 @@ var FESTIVALS = [
     period: "2027.02 (예정)",
     location: "Berlin, Germany",
     siteUrl: "https://www.berlinale.de/",
+    status: "upcoming",
     open: false,
     sections: [
       { name: "황금곰상 경쟁", type: "competition", films: [] },
@@ -1057,6 +1069,7 @@ var FESTIVALS = [
     period: "2026.08.27 – 09.06",
     location: "Venice, Italy",
     siteUrl: "https://www.labiennale.org/en/cinema/",
+    status: "upcoming",
     open: false,
     sections: [
       { name: "황금사자상 경쟁", type: "competition", films: [] },
@@ -1071,6 +1084,7 @@ var FESTIVALS = [
     period: "2026.09.10 – 09.20",
     location: "Toronto, Canada",
     siteUrl: "https://tiff.net/",
+    status: "upcoming",
     open: false,
     sections: [
       { name: "가라 프레미에르", type: "competition", films: [] },
@@ -1086,6 +1100,7 @@ var FESTIVALS = [
     period: "2026.10 (예정)",
     location: "부산, Korea",
     siteUrl: "https://www.biff.kr/",
+    status: "active",
     open: false,
     sections: [
       { name: "갈라 프레젠테이션", type: "competition", films: [] },
@@ -1102,6 +1117,7 @@ var FESTIVALS = [
     period: "2026.04.30 – 05.09",
     location: "전주, Korea",
     siteUrl: "https://www.jiff.or.kr/",
+    status: "past",
     open: false,
     sections: [
       { name: "국제경쟁", type: "competition", films: [] },
@@ -1117,6 +1133,7 @@ var FESTIVALS = [
     period: "2026.11 (예정)",
     location: "서울, Korea",
     siteUrl: "https://siff.or.kr/",
+    status: "upcoming",
     open: false,
     sections: [
       { name: "장편 경쟁", type: "competition", films: [] },
@@ -1131,6 +1148,7 @@ var FESTIVALS = [
     period: "2026.08 (예정)",
     location: "서울, Korea",
     siteUrl: "https://eidf.co.kr/",
+    status: "upcoming",
     open: false,
     sections: [
       { name: "국제경쟁", type: "competition", films: [] },
@@ -1148,14 +1166,23 @@ var TYPE_LABEL = {
   "special":         { ko:"특별",    cls:"ft-special" },
 };
 
+var festOtherOpen = false;
+
 function buildFest(){
   var el = document.getElementById('festContent');
   if(!el) return;
-  el.innerHTML = FESTIVALS.map(function(f, fi){
-    var sections = f.sections.map(function(s, si){
+
+  var active   = FESTIVALS.filter(function(f){ return f.status === 'active'; });
+  var others   = FESTIVALS.filter(function(f){ return f.status !== 'active'; });
+  var upcoming = others.filter(function(f){ return f.status === 'upcoming'; });
+  var past     = others.filter(function(f){ return f.status === 'past'; });
+
+  function festCard(f, fi){
+    var realIdx = FESTIVALS.indexOf(f);
+    var sections = f.sections.map(function(s){
       var typeMeta = TYPE_LABEL[s.type] || { ko:s.type, cls:"ft-special" };
       var filmRows = s.films.length
-        ? '<div class="prog-films open" id="ff-'+fi+'-'+si+'">'
+        ? '<div class="prog-films open">'
           + '<div class="film-grid-hdr" style="grid-template-columns:minmax(0,2.5fr) minmax(0,1.8fr) minmax(0,1.4fr);">'
           + '<div class="fghdr">Title</div><div class="fghdr">Director</div><div class="fghdr">Country</div>'
           + '</div>'
@@ -1170,7 +1197,7 @@ function buildFest(){
                 +'</div>';
             }).join('')
           + '</div>'
-        : '<div class="prog-films open" id="ff-'+fi+'-'+si+'"><div style="padding:12px 0 4px;font-size:12px;color:var(--text3);font-style:italic;">상영작 추후 공개 예정</div></div>';
+        : '<div class="prog-films open"><div style="padding:10px 0 4px;font-size:12px;color:var(--text3);font-style:italic;">상영작 추후 공개 예정</div></div>';
 
       return '<div class="prog-block">'
         +'<div class="prog-hdr open-hdr" style="cursor:default;">'
@@ -1181,22 +1208,69 @@ function buildFest(){
         +'</div>';
     }).join('');
 
+    var statusBadge = f.status === 'active'
+      ? '<span class="fest-status-badge fsb-active">진행 중</span>'
+      : f.status === 'upcoming'
+      ? '<span class="fest-status-badge fsb-upcoming">예정</span>'
+      : '<span class="fest-status-badge fsb-past">종료</span>';
+
     return '<div class="venue-block">'
-      +'<div class="venue-hdr" onclick="toggleFest('+fi+')">'
-      +'<span class="venue-arrow'+(f.open?' open':'')+'" id="fa-'+fi+'">▶</span>'
+      +'<div class="venue-hdr" onclick="toggleFest('+realIdx+')">'
+      +'<span class="venue-arrow'+(f.open?' open':'')+'" id="fa-'+realIdx+'">▶</span>'
       +'<div style="flex:1;min-width:0;">'
       +'<div class="venue-name-ko">'+f.nameKo+'</div>'
       +'<div class="venue-name-en">'+f.nameEn+'</div>'
       +'</div>'
       +'<div class="venue-links">'
+      +statusBadge
       +'<span class="fest-period">'+f.period+'</span>'
       +'<span class="fest-location">'+f.location+'</span>'
       +(f.siteUrl?'<a class="venue-link-btn vl-site" href="'+f.siteUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">공식 사이트 ↗</a>':'')
       +'</div>'
       +'</div>'
-      +'<div class="venue-body'+(f.open?' open':'')+'" id="fb-'+fi+'">'+sections+'</div>'
+      +'<div class="venue-body'+(f.open?' open':'')+'" id="fb-'+realIdx+'">'+sections+'</div>'
       +'</div>';
-  }).join('');
+  }
+
+  var html = '';
+
+  // 진행 중 영화제
+  if(active.length){
+    html += active.map(function(f){ return festCard(f); }).join('');
+  } else {
+    html += '<div style="padding:20px 0 8px;font-size:13px;color:var(--text3);font-style:italic;">현재 진행 중인 영화제가 없습니다.</div>';
+  }
+
+  // 예정 + 종료 묶음
+  if(others.length){
+    var otherCards = '';
+    if(upcoming.length){
+      otherCards += '<div class="fest-group-label">예정</div>';
+      otherCards += upcoming.map(function(f){ return festCard(f); }).join('');
+    }
+    if(past.length){
+      otherCards += '<div class="fest-group-label">종료</div>';
+      otherCards += past.map(function(f){ return festCard(f); }).join('');
+    }
+    html += '<div class="fest-others-wrap">'
+      +'<div class="fest-others-hdr" onclick="toggleFestOthers()">'
+      +'<span class="venue-arrow'+(festOtherOpen?' open':'')+'" id="festOtherArrow">▶</span>'
+      +'<span style="font-size:13px;font-weight:600;color:var(--text2);">다른 영화제 보기</span>'
+      +'<span style="font-size:11px;color:var(--text3);margin-left:8px;">('+others.length+'개)</span>'
+      +'</div>'
+      +'<div id="festOtherBody" style="display:'+(festOtherOpen?'block':'none')+';">'+otherCards+'</div>'
+      +'</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+function toggleFestOthers(){
+  festOtherOpen = !festOtherOpen;
+  var body  = document.getElementById('festOtherBody');
+  var arrow = document.getElementById('festOtherArrow');
+  if(body)  body.style.display = festOtherOpen ? 'block' : 'none';
+  if(arrow) arrow.classList.toggle('open', festOtherOpen);
 }
 
 function toggleFest(fi){
