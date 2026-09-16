@@ -221,7 +221,7 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
   <div class="mast-top">
     <div>
       <div class="mast-ko">이번 주에 뭐볼까...</div>
-      <div class="mast-note">매주 개봉작을 정리합니다. 극장에서 좋은 영화 많이 보세요.</div>
+      <div class="mast-note">매주 월요일, 이번 주 개봉작을 정리합니다. 극장에서 좋은 영화 많이 보세요.</div>
     </div>
     <div class="mast-right">
       <div class="mast-issue">Issue No. <span id="issueNo">19</span></div>
@@ -372,7 +372,17 @@ function loadSheetData(){
       if(Object.keys(sheetWeeks).length > 0){
         Object.keys(WEEKS).forEach(function(k){ delete WEEKS[k]; });
         Object.keys(sheetWeeks).forEach(function(k){ WEEKS[k] = sheetWeeks[k]; });
-        activeWeek = Object.keys(WEEKS).sort().pop();
+
+        // 현재 달 키 계산 (예: 2026-09)
+        var now = new Date();
+        var currentMonthKey = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0");
+
+        // 현재 달 데이터가 있으면 그걸 기본으로, 없으면 가장 최근 달
+        if(WEEKS[currentMonthKey]){
+          activeWeek = currentMonthKey;
+        } else {
+          activeWeek = Object.keys(WEEKS).sort().pop();
+        }
       }
     })
     .catch(function(err){ console.warn("Sheet 로드 실패:", err); })
