@@ -151,7 +151,10 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
 .auth-avatar { width:24px; height:24px; border-radius:50%; border:1.5px solid var(--gold); }
 .auth-name { font-size:11px; color:rgba(255,255,255,.5); max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
-/* RESPONSIVE */
+/* POSTER */
+.poster-thumb { width:36px; height:54px; object-fit:cover; border-radius:3px; display:block; background:var(--bg3); flex-shrink:0; }
+.poster-cell  { width:44px; padding-right:8px!important; vertical-align:middle; }
+.c-poster     { width:44px; }
 @media (max-width:900px){
   body { padding:0 0 40px; }
   .container { border-radius:0; border-left:none; border-right:none; box-shadow:none; }
@@ -166,8 +169,7 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
   .twrap { padding:0 20px 4px; }
   .cal-wrap { padding:16px 20px 24px; }
   .foot { padding:10px 20px 16px; font-size:11px; }
-  .c-cast,.c-kw,thead tr.hdr th.c-cast,thead tr.hdr th.c-kw,thead tr.frow td.c-cast,thead tr.frow td.c-kw { display:none; }
-}
+  .c-cast,.c-kw,thead tr.hdr th.c-cast,thead tr.hdr th.c-kw,thead tr.frow td.c-cast,thead tr.frow td.c-kw { display:none; }}
 @media (max-width:640px){
   body { padding:0 0 28px; }
   .mast { padding:18px 16px 0; }
@@ -251,6 +253,7 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
     <table>
       <thead>
         <tr class="hdr">
+          <th class="c-poster"></th>
           <th class="c-pick">Editor</th>
           <th class="c-mypick">Mine</th>
           <th class="c-rel sortable" onclick="srt('date')">Release <i class="si" id="s-date">↕</i></th>
@@ -264,6 +267,7 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
           <th class="c-st">Status</th>
         </tr>
         <tr class="frow">
+          <td class="c-poster"></td>
           <td class="c-pick"></td><td class="c-mypick"></td><td class="c-rel"></td>
           <td class="c-title"></td><td class="c-cast"></td><td class="c-dir"></td><td class="c-rt"></td>
           <td class="c-cntry"><select id="fCountry" onchange="render()"><option value="">All</option></select></td>
@@ -334,7 +338,7 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
 <script>
 var WEEKS = {};
 
-var SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwGdeqhsbRGH2ad8oog_4lW65HJDRgQlB45U66mKoc-WwNuUBHSZV5WDRe5kUVJHdmt9w/exec";
+var SHEET_API_URL = "https://script.google.com/macros/s/AKfycbx8M21awtK8xz_pa3wE9GuH4pgeErzyXVaWr3vbO90r99zbNPZwOGBbDZJP_Y5PQJbHKw/exec";
 
 var MONTH_NAMES = ["January","February","March","April","May","June",
                    "July","August","September","October","November","December"];
@@ -498,7 +502,11 @@ function titleHtml(m){
 function filmRow(m,wk,idx,searching){
   var rk=wk+'-'+idx, rt=m.runtime>0?m.runtime:'—', isMy=!!myPicks[rk];
   var rc=m.pick&&isMy?'bothpick':m.pick?'epick':isMy?'mpick':'';
+  var poster = m.poster
+    ? '<img class="poster-thumb" src="'+m.poster+'" alt="'+m.titleKo+'" loading="lazy">'
+    : '<div class="poster-thumb"></div>';
   return '<tr class="'+rc+'">'
+    +'<td class="poster-cell">'+poster+'</td>'
     +'<td class="c-pick">'+(m.pick?'<span class="pbadge">PICK</span>':'')+'</td>'
     +'<td class="c-mypick"><span class="mypick-btn '+(isMy?'on':'off')+'" onclick="toggleMy(\''+rk+'\')">'+(isMy?'★':'☆')+'</span></td>'
     +'<td class="c-rel dtcell">'+m.date+(searching?'<div class="week-src">'+wLabel(wk)+'</div>':'')+'</td>'
@@ -520,8 +528,13 @@ function filmCard(m,wk,idx,searching){
     ?'<a class="title-link" href="'+m.link+'" target="_blank" rel="noopener"><div class="tm">'+m.title+' <span class="title-link-icon">↗</span></div><div class="ts">'+m.titleKo+'</div></a>'
     :'<div class="tm">'+m.title+'</div><div class="ts">'+m.titleKo+'</div>';
   if(m.comment) tInner+='<div class="tc">'+m.comment+'</div>';
+  var cardPoster = m.poster
+    ? '<img class="poster-thumb" src="'+m.poster+'" alt="'+m.titleKo+'" loading="lazy" style="width:48px;height:72px;border-radius:4px;margin-right:12px;flex-shrink:0;">'
+    : '';
   return '<div class="film-card '+rc+'">'
-    +'<div class="card-top"><div class="card-title-wrap">'+tInner+'</div>'
+    +'<div class="card-top" style="align-items:flex-start;">'
+    + cardPoster
+    +'<div class="card-title-wrap" style="flex:1;min-width:0;">'+tInner+'</div>'
     +'<div class="card-actions">'+(m.pick?'<span class="pbadge">PICK</span>':'')
     +'<span class="card-mypick '+(isMy?'on':'off')+'" onclick="toggleMy(\''+rk+'\')">'+(isMy?'★':'☆')+'</span></div></div>'
     +'<div class="card-dir"><span class="den">'+m.dirEn+'</span>'+(m.dirKo?' <span class="dko">/ '+m.dirKo+'</span>':'')+'</div>'
