@@ -152,9 +152,18 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
 .auth-name { font-size:11px; color:rgba(255,255,255,.5); max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
 /* POSTER */
-.poster-thumb { width:36px; height:54px; object-fit:cover; border-radius:3px; display:block; background:var(--bg3); flex-shrink:0; }
+.poster-thumb { width:36px; height:54px; object-fit:cover; border-radius:3px; display:block; background:var(--bg3); flex-shrink:0; cursor:pointer; transition:opacity .15s; }
+.poster-thumb:hover { opacity:.8; }
 .poster-cell  { width:44px; padding-right:8px!important; vertical-align:middle; }
 .c-poster     { width:44px; }
+
+/* LIGHTBOX */
+.lb-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:9999; align-items:center; justify-content:center; cursor:pointer; }
+.lb-overlay.open { display:flex; }
+.lb-img { max-width:min(340px,90vw); max-height:90vh; border-radius:8px; box-shadow:0 8px 48px rgba(0,0,0,.6); object-fit:contain; cursor:default; }
+.lb-close { position:absolute; top:20px; right:24px; font-size:28px; color:rgba(255,255,255,.7); cursor:pointer; line-height:1; user-select:none; }
+.lb-close:hover { color:#fff; }
+.lb-title { position:absolute; bottom:24px; left:50%; transform:translateX(-50%); color:rgba(255,255,255,.8); font-size:13px; font-family:'Noto Serif KR',serif; white-space:nowrap; max-width:90vw; overflow:hidden; text-overflow:ellipsis; text-align:center; }
 @media (max-width:900px){
   body { padding:0 0 40px; }
   .container { border-radius:0; border-left:none; border-right:none; box-shadow:none; }
@@ -335,7 +344,13 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
 </div>
 
 </div>
-<script>
+
+<!-- POSTER LIGHTBOX -->
+<div class="lb-overlay" id="lbOverlay" onclick="closeLb()">
+  <span class="lb-close" onclick="closeLb()">✕</span>
+  <img class="lb-img" id="lbImg" src="" alt="" onclick="event.stopPropagation()">
+  <div class="lb-title" id="lbTitle"></div>
+</div>
 var WEEKS = {};
 
 var SHEET_API_URL = "https://script.google.com/macros/s/AKfycbx8M21awtK8xz_pa3wE9GuH4pgeErzyXVaWr3vbO90r99zbNPZwOGBbDZJP_Y5PQJbHKw/exec";
@@ -503,7 +518,7 @@ function filmRow(m,wk,idx,searching){
   var rk=wk+'-'+idx, rt=m.runtime>0?m.runtime:'—', isMy=!!myPicks[rk];
   var rc=m.pick&&isMy?'bothpick':m.pick?'epick':isMy?'mpick':'';
   var poster = m.poster
-    ? '<img class="poster-thumb" src="'+m.poster+'" alt="'+m.titleKo+'" loading="lazy">'
+    ? '<img class="poster-thumb" src="'+m.poster+'" alt="'+m.titleKo+'" loading="lazy" onclick="openLb(\''+m.poster+'\',\''+m.titleKo.replace(/'/g,'')+'\');event.stopPropagation();">'
     : '<div class="poster-thumb"></div>';
   return '<tr class="'+rc+'">'
     +'<td class="poster-cell">'+poster+'</td>'
@@ -529,7 +544,7 @@ function filmCard(m,wk,idx,searching){
     :'<div class="tm">'+m.title+'</div><div class="ts">'+m.titleKo+'</div>';
   if(m.comment) tInner+='<div class="tc">'+m.comment+'</div>';
   var cardPoster = m.poster
-    ? '<img class="poster-thumb" src="'+m.poster+'" alt="'+m.titleKo+'" loading="lazy" style="width:48px;height:72px;border-radius:4px;margin-right:12px;flex-shrink:0;">'
+    ? '<img class="poster-thumb" src="'+m.poster+'" alt="'+m.titleKo+'" loading="lazy" onclick="openLb(\''+m.poster+'\',\''+m.titleKo.replace(/'/g,'')+'\');" style="width:48px;height:72px;border-radius:4px;margin-right:12px;flex-shrink:0;">'
     : '';
   return '<div class="film-card '+rc+'">'
     +'<div class="card-top" style="align-items:flex-start;">'
@@ -605,6 +620,58 @@ function buildCal(){
 }
 function calFilmClick(titleKo){ calOpen=true; toggleCal({stopPropagation:function(){}}); document.getElementById('srch').value=titleKo; render(); }
 
+function toggleMy(rk){ myPicks[rk]=!myPicks[rk]; if(!myPicks[rk]) delete myPicks[rk]; updateMyTab(); render(); savePicksToFirebase(); }
+function updateMyTab(){ document.getElementById('cnt-m').textContent=Object.keys(myPicks).length; }
+
+function renderMyPicks(){
+  var keys=Object.keys(myPicks);
+  document.getElementById('mycnt').textContent=keys.length+' film'+(keys.length!==1?'s':'')+' saved';
+  if(!keys.length){ document.getElementById('mybody').innerHTML=''; var cl=document.getElementById('mycardList'); if(cl)cl.innerHTML=''; document.getElementById('myEmpty').style.display='block'; return; }
+  document.getElementById('myEmpty').style.display='none';
+  var rows=keys.map(function(rk){ var p=rk.split('-'),wk=p[0]+'-'+p[1],idx=parseInt(p[2]); var m=WEEKS[wk]&&WEEKS[wk].movies[idx]; if(!m)return''; return isMobile()?filmCard(m,wk,idx,true):filmRow(m,wk,idx,true); }).join('');
+  if(isMobile()){ document.getElementById('mybody').innerHTML=''; var cl=document.getElementById('mycardList'); if(cl)cl.innerHTML=rows; }
+  else { document.getElementById('mybody').innerHTML=rows; var cl=document.getElementById('mycardList'); if(cl)cl.innerHTML=''; }
+}
+
+/* SORT / EXPORT */
+function srt(k){
+  if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=1;}
+  document.querySelectorAll('th').forEach(function(t){t.classList.remove('srt');});
+  document.querySelectorAll('.si').forEach(function(i){i.textContent='↕';});
+  var el=document.getElementById('s-'+k); if(el){el.closest('th').classList.add('srt');el.textContent=sortDir===1?'↑':'↓';} render();
+}
+function mkXLrow(m,wk,rk){ return [m.pick?'PICK':'',myPicks[rk]?'★':'',m.date,m.title,m.titleKo,m.cast,m.dirEn,m.dirKo,m.runtime||'',m.country,m.type,m.keywords.join(' | '),m.comment||'',m.status==='new'?'New':'Re-release',wLabel(wk),m.link||'']; }
+function exportXL(){
+  var data=getFilt(); var rows=[['Editor','My Pick','Release','Title (EN)','Title (KO)','Cast','Director (EN)','Director (KO)','Min','Country','Type','Keywords','Comment','Status','Month','Link']];
+  data.forEach(function(m){ var wk=m._week||activeWeek,idx=m._idx!==undefined?m._idx:0; rows.push(mkXLrow(m,wk,wk+'-'+idx)); });
+  var ws=XLSX.utils.aoa_to_sheet(rows); ws['!cols']=[8,6,12,20,18,22,18,16,6,10,12,28,24,10,14,30].map(function(w){return{wch:w};}); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Films'); XLSX.writeFile(wb,'이번주뭐볼까.xlsx');
+}
+function exportMyXL(){
+  var keys=Object.keys(myPicks); if(!keys.length)return; var rows=[['Editor','Release','Title (EN)','Title (KO)','Cast','Director (EN)','Min','Country','Type','Keywords','Comment','Status','Month','Link']];
+  keys.forEach(function(rk){ var p=rk.split('-'),wk=p[0]+'-'+p[1],idx=parseInt(p[2]),m=WEEKS[wk]&&WEEKS[wk].movies[idx]; if(!m)return; rows.push(mkXLrow(m,wk,rk).slice(1)); });
+  var ws=XLSX.utils.aoa_to_sheet(rows); ws['!cols']=[8,12,20,18,22,18,6,10,12,28,24,10,14,30].map(function(w){return{wch:w};}); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'My Picks'); XLSX.writeFile(wb,'내picks.xlsx');
+}
+
+/* POSTER LIGHTBOX */
+function openLb(url, title){
+  // 클릭 시 w185 → w500 고화질로 교체
+  var hiRes = url.replace('/w185/', '/w500/');
+  document.getElementById('lbImg').src = hiRes;
+  document.getElementById('lbTitle').textContent = title || '';
+  document.getElementById('lbOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLb(){
+  document.getElementById('lbOverlay').classList.remove('open');
+  document.getElementById('lbImg').src = '';
+  document.body.style.overflow = '';
+}
+// ESC 키로 닫기
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeLb(); });
+
+init();
+window.addEventListener('resize', function(){ render(); });
+
 /* FIREBASE + PICKS */
 var currentUser=null, _db=null, _auth=null, _provider=null, _firebaseReady=false;
 var FIREBASE_CONFIG={
@@ -658,41 +725,6 @@ function savePicksToFirebase(){
 }
 function savePicksLocal(){ try{ localStorage.setItem('mwb_picks',JSON.stringify(myPicks)); }catch(e){} }
 function loadPicksLocal(){ try{ return JSON.parse(localStorage.getItem('mwb_picks')||'{}'); }catch(e){ return {}; } }
-
-function toggleMy(rk){ myPicks[rk]=!myPicks[rk]; if(!myPicks[rk]) delete myPicks[rk]; updateMyTab(); render(); savePicksToFirebase(); }
-function updateMyTab(){ document.getElementById('cnt-m').textContent=Object.keys(myPicks).length; }
-
-function renderMyPicks(){
-  var keys=Object.keys(myPicks);
-  document.getElementById('mycnt').textContent=keys.length+' film'+(keys.length!==1?'s':'')+' saved';
-  if(!keys.length){ document.getElementById('mybody').innerHTML=''; var cl=document.getElementById('mycardList'); if(cl)cl.innerHTML=''; document.getElementById('myEmpty').style.display='block'; return; }
-  document.getElementById('myEmpty').style.display='none';
-  var rows=keys.map(function(rk){ var p=rk.split('-'),wk=p[0]+'-'+p[1],idx=parseInt(p[2]); var m=WEEKS[wk]&&WEEKS[wk].movies[idx]; if(!m)return''; return isMobile()?filmCard(m,wk,idx,true):filmRow(m,wk,idx,true); }).join('');
-  if(isMobile()){ document.getElementById('mybody').innerHTML=''; var cl=document.getElementById('mycardList'); if(cl)cl.innerHTML=rows; }
-  else { document.getElementById('mybody').innerHTML=rows; var cl=document.getElementById('mycardList'); if(cl)cl.innerHTML=''; }
-}
-
-/* SORT / EXPORT */
-function srt(k){
-  if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=1;}
-  document.querySelectorAll('th').forEach(function(t){t.classList.remove('srt');});
-  document.querySelectorAll('.si').forEach(function(i){i.textContent='↕';});
-  var el=document.getElementById('s-'+k); if(el){el.closest('th').classList.add('srt');el.textContent=sortDir===1?'↑':'↓';} render();
-}
-function mkXLrow(m,wk,rk){ return [m.pick?'PICK':'',myPicks[rk]?'★':'',m.date,m.title,m.titleKo,m.cast,m.dirEn,m.dirKo,m.runtime||'',m.country,m.type,m.keywords.join(' | '),m.comment||'',m.status==='new'?'New':'Re-release',wLabel(wk),m.link||'']; }
-function exportXL(){
-  var data=getFilt(); var rows=[['Editor','My Pick','Release','Title (EN)','Title (KO)','Cast','Director (EN)','Director (KO)','Min','Country','Type','Keywords','Comment','Status','Month','Link']];
-  data.forEach(function(m){ var wk=m._week||activeWeek,idx=m._idx!==undefined?m._idx:0; rows.push(mkXLrow(m,wk,wk+'-'+idx)); });
-  var ws=XLSX.utils.aoa_to_sheet(rows); ws['!cols']=[8,6,12,20,18,22,18,16,6,10,12,28,24,10,14,30].map(function(w){return{wch:w};}); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Films'); XLSX.writeFile(wb,'이번주뭐볼까.xlsx');
-}
-function exportMyXL(){
-  var keys=Object.keys(myPicks); if(!keys.length)return; var rows=[['Editor','Release','Title (EN)','Title (KO)','Cast','Director (EN)','Min','Country','Type','Keywords','Comment','Status','Month','Link']];
-  keys.forEach(function(rk){ var p=rk.split('-'),wk=p[0]+'-'+p[1],idx=parseInt(p[2]),m=WEEKS[wk]&&WEEKS[wk].movies[idx]; if(!m)return; rows.push(mkXLrow(m,wk,rk).slice(1)); });
-  var ws=XLSX.utils.aoa_to_sheet(rows); ws['!cols']=[8,12,20,18,22,18,6,10,12,28,24,10,14,30].map(function(w){return{wch:w};}); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'My Picks'); XLSX.writeFile(wb,'내picks.xlsx');
-}
-
-init();
-window.addEventListener('resize', function(){ render(); });
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
