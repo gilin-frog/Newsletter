@@ -496,14 +496,28 @@ function buildArch(){
   if(WEEKS[activeWeek]) document.getElementById('cnt-r').textContent = WEEKS[activeWeek].movies.length;
   if(archDropOpen){ var dd=document.getElementById('archDrop'); if(dd) dd.classList.add('open'); }
 }
-function toggleArchDrop(e){ if(e) e.stopPropagation(); archDropOpen=!archDropOpen; var dd=document.getElementById('archDrop'); if(dd) dd.classList.toggle('open',archDropOpen); }
-function closeArchDrop(){ archDropOpen=false; var dd=document.getElementById('archDrop'); if(dd) dd.classList.remove('open'); }
+function toggleArchDrop(e){
+  if(e) e.stopPropagation();
+  archDropOpen=!archDropOpen;
+  var dd=document.getElementById('archDrop');
+  if(dd) dd.classList.toggle('open',archDropOpen);
+}
+function closeArchDrop(){
+  archDropOpen=false;
+  var dd=document.getElementById('archDrop');
+  if(dd) dd.classList.remove('open');
+}
+document.addEventListener('click', function(e){
+  var archMore = document.querySelector('.arch-more');
+  if(archMore && archMore.contains(e.target)) return;
+  closeArchDrop();
+});
+
 function switchWk(k){
   activeWeek=k; sortKey='date'; sortDir=1;
   if(calOpen){ calOpen=false; document.getElementById('v-r').style.display='block'; document.getElementById('v-cal-inner').style.display='none'; document.getElementById('calIcon').classList.remove('on'); }
   buildArch(); render();
 }
-document.addEventListener('click', function(){ closeArchDrop(); });
 
 function allMovies(){
   var all=[];
