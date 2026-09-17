@@ -487,7 +487,7 @@ function buildArch(){
       return '<div class="arch-dd-item'+(k===activeWeek?' on':'')+'" onclick="switchWk(\''+k+'\');closeArchDrop()">'+wLabel(k)+'</div>';
     }).join('');
     html += '<div class="arch-more">'
-      +'<div class="arch-more-btn'+(activeInOlder?' on':'')+'" onclick="toggleArchDrop()">Previous months ▾</div>'
+      +'<div class="arch-more-btn'+(activeInOlder?' on':'')+'" onclick="toggleArchDrop(event)">Previous months ▾</div>'
       +'<div class="arch-dropdown" id="archDrop">'+ddItems+'</div>'
       +'</div>';
   }
@@ -496,7 +496,7 @@ function buildArch(){
   if(WEEKS[activeWeek]) document.getElementById('cnt-r').textContent = WEEKS[activeWeek].movies.length;
   if(archDropOpen){ var dd=document.getElementById('archDrop'); if(dd) dd.classList.add('open'); }
 }
-function toggleArchDrop(){ archDropOpen=!archDropOpen; var dd=document.getElementById('archDrop'); if(dd) dd.classList.toggle('open',archDropOpen); event.stopPropagation(); }
+function toggleArchDrop(e){ if(e) e.stopPropagation(); archDropOpen=!archDropOpen; var dd=document.getElementById('archDrop'); if(dd) dd.classList.toggle('open',archDropOpen); }
 function closeArchDrop(){ archDropOpen=false; var dd=document.getElementById('archDrop'); if(dd) dd.classList.remove('open'); }
 function switchWk(k){
   activeWeek=k; sortKey='date'; sortDir=1;
@@ -550,8 +550,9 @@ function titleHtml(m){
 function filmRow(m,wk,idx,searching){
   var rk=wk+'-'+idx, rt=m.runtime>0?m.runtime:'—', isMy=!!myPicks[rk];
   var rc=m.pick&&isMy?'bothpick':m.pick?'epick':isMy?'mpick':'';
-  var poster = m.poster
-    ? '<img class="poster-thumb" src="'+m.poster+'" alt="'+m.titleKo+'" loading="lazy" onclick="openLb(\''+m.poster+'\',\''+m.titleKo.replace(/'/g,'')+'\');event.stopPropagation();">'
+  var posterUrl = m.poster ? m.poster.replace(/['"[\]]/g,'').trim() : '';
+  var poster = posterUrl
+    ? '<img class="poster-thumb" src="'+posterUrl+'" alt="'+m.titleKo+'" loading="lazy" onclick="openLb(\''+posterUrl+'\',\''+m.titleKo.replace(/'/g,'')+'\');event.stopPropagation();">'
     : '<div class="poster-thumb"></div>';
   return '<tr class="'+rc+'">'
     +'<td class="poster-cell">'+poster+'</td>'
@@ -576,8 +577,9 @@ function filmCard(m,wk,idx,searching){
     ?'<a class="title-link" href="'+m.link+'" target="_blank" rel="noopener"><div class="tm">'+m.title+' <span class="title-link-icon">↗</span></div><div class="ts">'+m.titleKo+'</div></a>'
     :'<div class="tm">'+m.title+'</div><div class="ts">'+m.titleKo+'</div>';
   if(m.comment) tInner+='<div class="tc">'+m.comment+'</div>';
-  var cardPoster = m.poster
-    ? '<img class="poster-thumb" src="'+m.poster+'" alt="'+m.titleKo+'" loading="lazy" onclick="openLb(\''+m.poster+'\',\''+m.titleKo.replace(/'/g,'')+'\');" style="width:48px;height:72px;border-radius:4px;margin-right:12px;flex-shrink:0;">'
+  var cardPosterUrl = m.poster ? m.poster.replace(/['"]/g,'').trim() : '';
+  var cardPoster = cardPosterUrl
+    ? '<img class="poster-thumb" src="'+cardPosterUrl+'" alt="'+m.titleKo+'" loading="lazy" onclick="openLb(\''+cardPosterUrl+'\',\''+m.titleKo.replace(/'/g,'')+'\');" style="width:48px;height:72px;border-radius:4px;margin-right:12px;flex-shrink:0;">'
     : '';
   return '<div class="film-card '+rc+'">'
     +'<div class="card-top" style="align-items:flex-start;">'
