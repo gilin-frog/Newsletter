@@ -496,7 +496,7 @@ function buildArch(){
   if(WEEKS[activeWeek]) document.getElementById('cnt-r').textContent = WEEKS[activeWeek].movies.length;
   if(archDropOpen){ var dd=document.getElementById('archDrop'); if(dd) dd.classList.add('open'); }
 }
-function toggleArchDrop(){ archDropOpen=!archDropOpen; var dd=document.getElementById('archDrop'); if(dd) dd.classList.toggle('open',archDropOpen); }
+function toggleArchDrop(){ archDropOpen=!archDropOpen; var dd=document.getElementById('archDrop'); if(dd) dd.classList.toggle('open',archDropOpen); event.stopPropagation(); }
 function closeArchDrop(){ archDropOpen=false; var dd=document.getElementById('archDrop'); if(dd) dd.classList.remove('open'); }
 function switchWk(k){
   activeWeek=k; sortKey='date'; sortDir=1;
