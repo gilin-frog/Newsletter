@@ -391,8 +391,13 @@ function loadSheetData(){
           if(!isNaN(d.getTime())) normWk = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
         }
         if(!sheetWeeks[normWk]) sheetWeeks[normWk] = { label: monthLabel(normWk), movies: [] };
-        data.weeks[wk].forEach(function(m){ sheetWeeks[normWk].movies.push(m); });
+        var items = data.weeks[wk];
+        // 배열인지 확인 후 push
+        if(Array.isArray(items)){
+          items.forEach(function(m){ if(m && m.titleKo) sheetWeeks[normWk].movies.push(m); });
+        }
       });
+      console.log("Loaded months:", Object.keys(sheetWeeks));
       if(Object.keys(sheetWeeks).length > 0){
         Object.keys(WEEKS).forEach(function(k){ delete WEEKS[k]; });
         Object.keys(sheetWeeks).forEach(function(k){ WEEKS[k] = sheetWeeks[k]; });
