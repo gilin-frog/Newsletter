@@ -235,7 +235,7 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
   <div class="mast-top">
     <div>
       <div class="mast-ko">이번 주에 뭐볼까...</div>
-      <div class="mast-note">매주 개봉작을 정리합니다. 극장에서 좋은 영화 많이 보세요.</div>
+      <div class="mast-note">매주 월요일, 이번 주 개봉작을 정리합니다. 극장에서 좋은 영화 많이 보세요.</div>
     </div>
     <div class="mast-right">
       <div class="mast-issue">Issue No. <span id="issueNo">19</span></div>
@@ -449,32 +449,34 @@ function toggleCal(e){
 
 var archDropOpen=false;
 function buildArch(){
-  var keys = Object.keys(WEEKS).sort(); // 오름차순 (과거 → 미래)
+  var keys = Object.keys(WEEKS).sort(); // 오름차순
   var now  = new Date();
   var currentKey = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0");
 
-  // 현재 달 인덱스 (없으면 가장 가까운 달로)
+  // 현재 달 인덱스
   var currentIdx = keys.indexOf(currentKey);
-  if(currentIdx === -1){
-    // 현재 달 데이터 없으면 activeWeek 기준
-    currentIdx = keys.indexOf(activeWeek);
-    if(currentIdx === -1) currentIdx = keys.length - 1;
-  }
+  if(currentIdx === -1) currentIdx = keys.indexOf(activeWeek);
+  if(currentIdx === -1) currentIdx = keys.length - 1;
 
-  // 현재 달 기준 앞 2개 + 현재 + 뒤 2개 = 최대 5개 탭
+  // 현재 달 기준: 이전 2개 + 현재 + 이후 2개 = 최대 5개
   var start   = Math.max(0, currentIdx - 2);
   var end     = Math.min(keys.length - 1, currentIdx + 2);
-  var visible = keys.slice(start, end + 1);
-  var older   = keys.slice(0, start).reverse(); // 더 오래된 것들 (최신순)
+
+  // 5개 미만이면 더 채우기 (앞쪽 부족하면 뒤쪽에서, 뒤쪽 부족하면 앞쪽에서)
+  while((end - start) < 4 && start > 0) start--;
+  while((end - start) < 4 && end < keys.length - 1) end++;
+
+  var visible = keys.slice(start, end + 1);  // 탭으로 보일 달들
+  var older   = keys.slice(0, start).reverse(); // 더 오래된 달 (최신순)
 
   var activeInOlder = older.indexOf(activeWeek) > -1;
 
-  // 탭 렌더링 (최신순으로 표시)
+  // 최신순으로 탭 렌더링
   var html = visible.slice().reverse().map(function(k){
     return '<div class="atab'+(k===activeWeek?' on':'')+'" onclick="switchWk(\''+k+'\')">'+wLabel(k)+'</div>';
   }).join('');
 
-  // 이전 달 드롭다운
+  // Previous months 드롭다운
   if(older.length){
     var ddItems = older.map(function(k){
       return '<div class="arch-dd-item'+(k===activeWeek?' on':'')+'" onclick="switchWk(\''+k+'\');closeArchDrop()">'+wLabel(k)+'</div>';
