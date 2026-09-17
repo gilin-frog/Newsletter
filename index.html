@@ -6,6 +6,9 @@
 <title>이번 주에 뭐볼까...</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -152,9 +155,18 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
 .auth-name { font-size:11px; color:rgba(255,255,255,.5); max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
 /* POSTER */
-.poster-thumb { width:36px; height:54px; object-fit:cover; border-radius:3px; display:block; background:var(--bg3); flex-shrink:0; }
+.poster-thumb { width:36px; height:54px; object-fit:cover; border-radius:3px; display:block; background:var(--bg3); flex-shrink:0; cursor:pointer; transition:opacity .15s; }
+.poster-thumb:hover { opacity:.8; }
 .poster-cell  { width:44px; padding-right:8px!important; vertical-align:middle; }
 .c-poster     { width:44px; }
+
+/* LIGHTBOX */
+.lb-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:9999; align-items:center; justify-content:center; cursor:pointer; }
+.lb-overlay.open { display:flex; }
+.lb-img { max-width:min(340px,90vw); max-height:90vh; border-radius:8px; box-shadow:0 8px 48px rgba(0,0,0,.6); object-fit:contain; cursor:default; }
+.lb-close { position:absolute; top:20px; right:24px; font-size:28px; color:rgba(255,255,255,.7); cursor:pointer; line-height:1; user-select:none; }
+.lb-close:hover { color:#fff; }
+.lb-title { position:absolute; bottom:24px; left:50%; transform:translateX(-50%); color:rgba(255,255,255,.8); font-size:13px; font-family:'Noto Serif KR',serif; white-space:nowrap; max-width:90vw; overflow:hidden; text-overflow:ellipsis; text-align:center; }
 @media (max-width:900px){
   body { padding:0 0 40px; }
   .container { border-radius:0; border-left:none; border-right:none; box-shadow:none; }
@@ -334,6 +346,13 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
   </div>
 </div>
 
+<!-- POSTER LIGHTBOX -->
+<div class="lb-overlay" id="lbOverlay" onclick="closeLb()">
+  <span class="lb-close" onclick="closeLb()">✕</span>
+  <img class="lb-img" id="lbImg" src="" alt="" onclick="event.stopPropagation()">
+  <div class="lb-title" id="lbTitle"></div>
+</div>
+
 </div>
 <script>
 var WEEKS = {};
@@ -359,7 +378,10 @@ function loadSheetData(){
   var arch = document.getElementById('archBar');
   if(arch) arch.innerHTML = '<div style="font-size:12px;color:rgba(255,255,255,.3);padding:8px 14px;">Loading…</div>';
 
-  fetch(SHEET_API_URL)
+  // Apps Script는 CORS를 지원하므로 캐시 방지 파라미터 추가
+  var url = SHEET_API_URL + (SHEET_API_URL.indexOf('?') > -1 ? '&' : '?') + '_=' + Date.now();
+
+  fetch(url)
     .then(function(r){ return r.json(); })
     .then(function(data){
       if(data.status !== 200 || !data.weeks) throw new Error(data.error || "bad response");
@@ -503,7 +525,7 @@ function filmRow(m,wk,idx,searching){
   var rk=wk+'-'+idx, rt=m.runtime>0?m.runtime:'—', isMy=!!myPicks[rk];
   var rc=m.pick&&isMy?'bothpick':m.pick?'epick':isMy?'mpick':'';
   var poster = m.poster
-    ? '<img class="poster-thumb" src="'+m.poster+'" alt="'+m.titleKo+'" loading="lazy">'
+    ? '<img class="poster-thumb" src="'+m.poster+'" alt="'+m.titleKo+'" loading="lazy" onclick="openLb(\''+m.poster+'\',\''+m.titleKo.replace(/'/g,'')+'\');event.stopPropagation();">'
     : '<div class="poster-thumb"></div>';
   return '<tr class="'+rc+'">'
     +'<td class="poster-cell">'+poster+'</td>'
@@ -529,7 +551,7 @@ function filmCard(m,wk,idx,searching){
     :'<div class="tm">'+m.title+'</div><div class="ts">'+m.titleKo+'</div>';
   if(m.comment) tInner+='<div class="tc">'+m.comment+'</div>';
   var cardPoster = m.poster
-    ? '<img class="poster-thumb" src="'+m.poster+'" alt="'+m.titleKo+'" loading="lazy" style="width:48px;height:72px;border-radius:4px;margin-right:12px;flex-shrink:0;">'
+    ? '<img class="poster-thumb" src="'+m.poster+'" alt="'+m.titleKo+'" loading="lazy" onclick="openLb(\''+m.poster+'\',\''+m.titleKo.replace(/'/g,'')+'\');" style="width:48px;height:72px;border-radius:4px;margin-right:12px;flex-shrink:0;">'
     : '';
   return '<div class="film-card '+rc+'">'
     +'<div class="card-top" style="align-items:flex-start;">'
@@ -691,13 +713,28 @@ function exportMyXL(){
   var ws=XLSX.utils.aoa_to_sheet(rows); ws['!cols']=[8,12,20,18,22,18,6,10,12,28,24,10,14,30].map(function(w){return{wch:w};}); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'My Picks'); XLSX.writeFile(wb,'내picks.xlsx');
 }
 
+/* POSTER LIGHTBOX */
+function openLb(url, title){
+  var hiRes = url.replace('/w185/', '/w500/');
+  document.getElementById('lbImg').src = hiRes;
+  document.getElementById('lbTitle').textContent = title || '';
+  document.getElementById('lbOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLb(){
+  document.getElementById('lbOverlay').classList.remove('open');
+  document.getElementById('lbImg').src = '';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLb(); });
+
 init();
 window.addEventListener('resize', function(){ render(); });
 </script>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script>initFirebase();</script>
+<script>
+  // Firebase SDKs already loaded in <head> — call initFirebase directly
+  initFirebase();
+</script>
 </body>
 </html>
