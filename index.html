@@ -500,7 +500,7 @@ function buildArch(){
   if(archDropOpen){ var dd=document.getElementById('archDrop'); if(dd) dd.classList.add('open'); }
 }
 function toggleArchDrop(e){
-  if(e) e.stopPropagation();
+  if(e){ e.preventDefault(); e.stopPropagation(); }
   archDropOpen=!archDropOpen;
   var dd=document.getElementById('archDrop');
   if(dd) dd.classList.toggle('open',archDropOpen);
@@ -511,10 +511,11 @@ function closeArchDrop(){
   if(dd) dd.classList.remove('open');
 }
 document.addEventListener('click', function(e){
-  var archMore = document.querySelector('.arch-more');
-  if(archMore && archMore.contains(e.target)) return;
+  var dd=document.getElementById('archDrop');
+  var btn=document.querySelector('.arch-more-btn');
+  if((dd&&dd.contains(e.target))||(btn&&btn.contains(e.target))) return;
   closeArchDrop();
-}, true);
+});
 
 function switchWk(k){
   activeWeek=k; sortKey='date'; sortDir=1;
