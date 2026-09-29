@@ -70,6 +70,8 @@ body { font-family:Helvetica,Arial,sans-serif; background:var(--bg2); min-height
 .cbtn { font-size:13px; font-weight:600; padding:7px 16px; border:none; border-radius:var(--radius); cursor:pointer; font-family:Helvetica,Arial,sans-serif; letter-spacing:.04em; white-space:nowrap; }
 .cbtn-g { background:var(--gold); color:var(--dark); }
 .cbtn-g:hover { background:#b5953e; }
+.cbtn-o { background:transparent; border:.5px solid var(--border2); color:var(--text2); }
+.cbtn-o:hover { border-color:var(--gold); color:var(--gold); }
 
 /* TABLE */
 .twrap { overflow-x:auto; padding:0 36px 4px; }
@@ -239,7 +241,6 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
       <div class="mast-note">매주 개봉작을 정리합니다. 극장에서 좋은 영화 많이 보세요.</div>
     </div>
     <div class="mast-right">
-      <div class="mast-issue">Issue No. <span id="issueNo">19</span></div>
       <div class="mast-date" id="mDate"></div>
       <div class="auth-bar">
         <img class="auth-avatar" id="authAvatar" src="" alt="" style="display:none;">
@@ -261,7 +262,8 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
     <div id="archMoreSlot"></div>
   </div>
   <div class="sbar">
-    <input id="srch" placeholder="Search across ALL months — title, director, cast, country, keywords…" oninput="render()">
+    <button class="cbtn cbtn-o" id="backBtn" onclick="clearSearch()" style="display:none;">← 달력으로</button>
+    <input id="srch" placeholder="Search across ALL months — title, director, cast, country, keywords…" oninput="onSrchInput()">
     <span class="scope-lbl" id="scopeLabel"></span>
     <button class="cbtn cbtn-g" onclick="exportXL()">↓ Excel</button>
   </div>
@@ -461,22 +463,23 @@ function toggleCal(e){
 
 var archDropOpen=false;
 function buildArch(){
-  var keys = Object.keys(WEEKS).sort(); // 오름차순
+  var keys = Object.keys(WEEKS).sort(); // 오름차순 (과거 → 미래)
   var now  = new Date();
   var currentKey = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0");
 
-  // 현재 달 인덱스
-  var currentIdx = keys.indexOf(currentKey);
-  if(currentIdx === -1) currentIdx = keys.indexOf(activeWeek);
-  if(currentIdx === -1) currentIdx = keys.length - 1;
+  // 현재 달이 데이터에 없으면 가장 가까운 미래 달 사용
+  var anchorKey = currentKey;
+  if(keys.indexOf(anchorKey) === -1){
+    // 현재 달 이후 중 가장 가까운 것
+    var future = keys.filter(function(k){ return k >= currentKey; });
+    anchorKey = future.length ? future[0] : keys[keys.length - 1];
+  }
 
-  // 현재 달 기준: 이전 2개 + 현재 + 이후 2개 = 최대 5개
-  var start   = Math.max(0, currentIdx - 2);
-  var end     = Math.min(keys.length - 1, currentIdx + 2);
+  var anchorIdx = keys.indexOf(anchorKey);
 
-  // 5개 미만이면 더 채우기 (앞쪽 부족하면 뒤쪽에서, 뒤쪽 부족하면 앞쪽에서)
-  while((end - start) < 4 && start > 0) start--;
-  while((end - start) < 4 && end < keys.length - 1) end++;
+  // anchor 기준: 이후 2개 + anchor + 이전 2개 = 최대 5개
+  var end   = Math.min(keys.length - 1, anchorIdx + 2);
+  var start = Math.max(0, end - 4); // 항상 5개 확보
 
   var visible = keys.slice(start, end + 1);  // 탭으로 보일 달들
   var older   = keys.slice(0, start).reverse(); // 더 오래된 달 (최신순)
@@ -694,7 +697,30 @@ function buildCal(){
   for(var n=1;n<=remaining;n++) html+='<div class="cal-day other-month"><div class="cal-day-num">'+n+'</div></div>';
   document.getElementById('calGrid').innerHTML=html;
 }
-function calFilmClick(titleKo){ calOpen=true; toggleCal({stopPropagation:function(){}}); document.getElementById('srch').value=titleKo; render(); }
+function calFilmClick(titleKo){
+  // 달력 닫기
+  calOpen=true; toggleCal({stopPropagation:function(){}});
+  // 검색창에 영화 제목 입력
+  document.getElementById('srch').value=titleKo;
+  // 뒤로가기 버튼 표시
+  document.getElementById('backBtn').style.display='inline-block';
+  render();
+}
+
+function clearSearch(){
+  // 검색 초기화 + 달력으로 복귀
+  document.getElementById('srch').value='';
+  document.getElementById('backBtn').style.display='none';
+  // 달력 다시 열기
+  calOpen=false; toggleCal({stopPropagation:function(){}});
+}
+
+function onSrchInput(){
+  // 검색창 직접 입력 시 뒤로가기 버튼 숨기기
+  var q=document.getElementById('srch').value;
+  document.getElementById('backBtn').style.display='none';
+  render();
+}
 
 /* FIREBASE + PICKS */
 var currentUser=null, _db=null, _auth=null, _provider=null, _firebaseReady=false;
