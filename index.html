@@ -363,7 +363,7 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
 <script>
 var WEEKS = {};
 
-var SHEET_API_URL = "https://script.google.com/macros/s/AKfycby5N8MTgNIxCYYfqb5xBXENafmQYObsJYWFZ49YUvBIEDlQJmdmm5QEqAS9E82PfrTQbw/exec";
+var SHEET_API_URL = "https://script.google.com/macros/s/AKfycbynYqMQBtNDRaxsZAN3xAHN2SAjudHrKtwpFa1_N9su842hytroZVBSDlEfesO_B7DEyQ/exec";
 
 var MONTH_NAMES = ["January","February","March","April","May","June",
                    "July","August","September","October","November","December"];
@@ -708,11 +708,17 @@ function calFilmClick(titleKo){
 }
 
 function clearSearch(){
-  // 검색 초기화 + 달력으로 복귀
+  // 검색 초기화 — 달력 닫고 테이블 뷰로 복귀
   document.getElementById('srch').value='';
   document.getElementById('backBtn').style.display='none';
-  // 달력 다시 열기
-  calOpen=false; toggleCal({stopPropagation:function(){}});
+  // 달력이 열려있으면 닫기
+  if(calOpen){
+    calOpen=false;
+    document.getElementById('v-r').style.display='block';
+    document.getElementById('v-cal-inner').style.display='none';
+    document.getElementById('calIcon').classList.remove('on');
+  }
+  render();
 }
 
 function onSrchInput(){
