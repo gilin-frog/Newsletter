@@ -421,6 +421,9 @@ function loadSheetData(){
 var activeMain='r', activeWeek='2026-08';
 var sortKey='date', sortDir=1, myPicks={};
 var calYear, calMonth;
+var _renderCache = {};  // 월별 렌더링 캐시
+
+function invalidateCache(){ _renderCache = {}; }  // 필터/정렬 변경 시 캐시 초기화
 
 function wLabel(k){ return WEEKS[k] ? WEEKS[k].label : monthLabel(k); }
 
@@ -511,7 +514,7 @@ document.addEventListener('click', function(e){
   var archMore = document.querySelector('.arch-more');
   if(archMore && archMore.contains(e.target)) return;
   closeArchDrop();
-});
+}, true);
 
 function switchWk(k){
   activeWeek=k; sortKey='date'; sortDir=1;
@@ -616,7 +619,15 @@ function filmCard(m,wk,idx,searching){
 
 function render(){
   var q=document.getElementById('srch').value.trim();
-  var data=getFilt(), searching=q.length>0;
+  var searching=q.length>0;
+
+  // 캐시 키: 현재 달 + 검색어 + 필터 조합
+  var gc=document.getElementById('fCountry').value, gt=document.getElementById('fType').value;
+  var gk=document.getElementById('fKeyword').value, gs=document.getElementById('fStatus').value;
+  var isMob=isMobile();
+  var cacheKey = activeWeek+'|'+q+'|'+gc+'|'+gt+'|'+gk+'|'+gs+'|'+sortKey+'|'+sortDir+'|'+isMob;
+
+  var data=getFilt();
   document.getElementById('scopeLabel').innerHTML=searching
     ?'Searching <span>all months</span> · '+data.length+' result'+(data.length!==1?'s':'')
     :'Showing <span>'+wLabel(activeWeek)+'</span>';
@@ -625,17 +636,24 @@ function render(){
   var noRes=document.getElementById('nores');
   if(!data.length){ document.getElementById('tbody').innerHTML=''; document.getElementById('cardList').innerHTML=''; noRes.style.display='block'; return; }
   noRes.style.display='none';
-  if(isMobile()){
-    document.getElementById('tbody').innerHTML='';
-    document.getElementById('cardList').innerHTML=data.map(function(m){
-      var wk=m._week||activeWeek,idx=m._idx!==undefined?m._idx:0; return filmCard(m,wk,idx,searching);
-    }).join('');
-  } else {
-    document.getElementById('cardList').innerHTML='';
-    document.getElementById('tbody').innerHTML=data.map(function(m){
-      var wk=m._week||activeWeek,idx=m._idx!==undefined?m._idx:0; return filmRow(m,wk,idx,searching);
-    }).join('');
+
+  // 캐시 히트 시 즉시 반환
+  if(_renderCache[cacheKey]){
+    if(isMob){ document.getElementById('tbody').innerHTML=''; document.getElementById('cardList').innerHTML=_renderCache[cacheKey]; }
+    else { document.getElementById('cardList').innerHTML=''; document.getElementById('tbody').innerHTML=_renderCache[cacheKey]; }
+    return;
   }
+
+  // 캐시 미스 시 렌더링 후 저장
+  var html = data.map(function(m){
+    var wk=m._week||activeWeek, idx=m._idx!==undefined?m._idx:0;
+    return isMob ? filmCard(m,wk,idx,searching) : filmRow(m,wk,idx,searching);
+  }).join('');
+
+  _renderCache[cacheKey] = html;
+
+  if(isMob){ document.getElementById('tbody').innerHTML=''; document.getElementById('cardList').innerHTML=html; }
+  else { document.getElementById('cardList').innerHTML=''; document.getElementById('tbody').innerHTML=html; }
 }
 
 /* CALENDAR */
