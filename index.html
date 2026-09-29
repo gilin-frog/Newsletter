@@ -37,7 +37,8 @@ body { font-family:Helvetica,Arial,sans-serif; background:var(--bg2); min-height
 .mtab.on .mtab-cnt { background:var(--gold-bg); color:var(--gold); }
 
 /* ARCHIVE BAR */
-.arch { display:flex; background:var(--dark); padding:0 36px; border-bottom:1px solid rgba(255,255,255,.07); overflow-x:auto; }
+.arch-wrap { background:var(--dark); border-bottom:1px solid rgba(255,255,255,.07); display:flex; align-items:stretch; position:relative; }
+.arch { display:flex; padding:0 0 0 36px; overflow-x:auto; flex:1; }
 .arch::-webkit-scrollbar { height:2px; }
 .arch::-webkit-scrollbar-thumb { background:rgba(255,255,255,.12); }
 .atab { font-size:12px; padding:8px 14px; color:rgba(255,255,255,.26); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; letter-spacing:.03em; transition:color .15s; }
@@ -255,7 +256,10 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
 
 <!-- RELEASES -->
 <div id="v-r">
-  <div class="arch" id="archBar"></div>
+  <div class="arch-wrap">
+    <div class="arch" id="archBar"></div>
+    <div id="archMoreSlot"></div>
+  </div>
   <div class="sbar">
     <input id="srch" placeholder="Search across ALL months — title, director, cast, country, keywords…" oninput="render()">
     <span class="scope-lbl" id="scopeLabel"></span>
@@ -484,18 +488,22 @@ function buildArch(){
     return '<div class="atab'+(k===activeWeek?' on':'')+'" onclick="switchWk(\''+k+'\')">'+wLabel(k)+'</div>';
   }).join('');
 
-  // Previous months 드롭다운
-  if(older.length){
+  document.getElementById('archBar').innerHTML = html;
+
+  // Previous months 드롭다운 — overflow 문제 피해 arch 밖에 렌더링
+  var slot = document.getElementById('archMoreSlot');
+  if(older.length && slot){
     var ddItems = older.map(function(k){
       return '<div class="arch-dd-item'+(k===activeWeek?' on':'')+'" onclick="switchWk(\''+k+'\');closeArchDrop()">'+wLabel(k)+'</div>';
     }).join('');
-    html += '<div class="arch-more">'
+    slot.innerHTML = '<div class="arch-more">'
       +'<div class="arch-more-btn'+(activeInOlder?' on':'')+'" onclick="toggleArchDrop(event)">Previous months ▾</div>'
       +'<div class="arch-dropdown" id="archDrop">'+ddItems+'</div>'
       +'</div>';
+  } else if(slot){
+    slot.innerHTML = '';
   }
 
-  document.getElementById('archBar').innerHTML = html;
   if(WEEKS[activeWeek]) document.getElementById('cnt-r').textContent = WEEKS[activeWeek].movies.length;
   if(archDropOpen){ var dd=document.getElementById('archDrop'); if(dd) dd.classList.add('open'); }
 }
