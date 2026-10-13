@@ -157,11 +157,36 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
 .fest-legend-chip:hover { border-color:var(--gold); color:var(--gold); }
 .fest-legend-chip.on { background:var(--dark); color:var(--gold); border-color:var(--dark); }
 .fest-body { padding:0 36px 24px; }
-.fest-festival { margin-top:28px; }
-.fest-fest-name { font-family:'Noto Serif KR',serif; font-size:20px; font-weight:600; color:var(--dark); border-bottom:1.5px solid var(--dark); padding-bottom:8px; margin-bottom:20px; }
-.fest-section { margin-bottom:28px; }
-.fest-sec-name { font-size:12px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--text3); margin-bottom:12px; padding-left:2px; display:flex; align-items:center; gap:8px; }
+.fest-festival { margin-top:16px; border:.5px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+/* 영화제 헤더 — 클릭해서 접기/펼치기 */
+.fest-fest-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 20px; cursor:pointer; user-select:none;
+  background:var(--dark);
+  transition:background .15s;
+}
+.fest-fest-header:hover { background:#1a2130; }
+.fest-fest-name { font-family:'Noto Serif KR',serif; font-size:18px; font-weight:600; color:#fff; }
+.fest-fest-meta { font-size:12px; color:rgba(255,255,255,.35); margin-left:8px; font-family:Helvetica,Arial,sans-serif; font-weight:400; }
+.fest-fest-toggle { font-size:16px; color:rgba(255,255,255,.4); transition:transform .2s; flex-shrink:0; margin-left:12px; }
+.fest-fest-toggle.open { transform:rotate(180deg); }
+.fest-fest-body { }
+.fest-fest-body.collapsed { display:none; }
+/* 섹션 헤더 */
+.fest-section { border-top:.5px solid var(--border); }
+.fest-sec-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:11px 20px; cursor:pointer; user-select:none;
+  background:var(--bg2); transition:background .12s;
+}
+.fest-sec-header:hover { background:var(--bg3); }
+.fest-sec-name { font-size:11px; font-weight:600; letter-spacing:.13em; text-transform:uppercase; color:var(--text2); display:flex; align-items:center; gap:8px; }
 .fest-sec-badge { font-size:10px; font-weight:600; padding:2px 7px; border-radius:10px; background:var(--bg3); color:var(--text2); border:.5px solid var(--border2); letter-spacing:.05em; text-transform:none; }
+.fest-sec-cnt { font-size:11px; color:var(--text3); margin-left:auto; margin-right:10px; }
+.fest-sec-toggle { font-size:13px; color:var(--text3); transition:transform .2s; }
+.fest-sec-toggle.open { transform:rotate(180deg); }
+.fest-sec-body { padding:14px 20px 20px; }
+.fest-sec-body.collapsed { display:none; }
 .fest-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:10px; }
 .fest-film { background:var(--bg); border:.5px solid var(--border); border-radius:var(--radius-lg); padding:14px 16px; transition:border-color .12s; }
 .fest-film:hover { border-color:var(--gold); }
@@ -182,7 +207,10 @@ tr.frow select { width:100%; font-size:12px; padding:4px 6px; border:.5px solid 
   .fest-toolbar input { min-width:unset; width:100%; }
   .fest-body { padding:0 16px 20px; }
   .fest-grid { grid-template-columns:1fr; }
-  .fest-fest-name { font-size:17px; }
+  .fest-fest-name { font-size:16px; }
+  .fest-fest-header { padding:13px 16px; }
+  .fest-sec-header { padding:10px 16px; }
+  .fest-sec-body { padding:12px 16px 16px; }
 }
 
 /* AUTH */
@@ -858,10 +886,36 @@ function renderMyPicks(){
 }
 
 /* FESTIVAL RENDER */
-var festActiveFest = '';  // '' = 전체
+var festActiveFest = '';   // '' = 전체
+var festCollapsed = {};    // { festKey: true/false }  — 영화제 접힘 상태
+var festSecCollapsed = {}; // { festKey+'::'+secName: true/false } — 섹션 접힘 상태
+
+function toggleFest(fn){
+  festCollapsed[fn] = !festCollapsed[fn];
+  var key = fn.replace(/[^a-z0-9]/gi,'_');
+  var body = document.getElementById('ffb-'+key);
+  var arrow = document.getElementById('ffa-'+key);
+  if(body){ body.classList.toggle('collapsed', festCollapsed[fn]); }
+  if(arrow){ arrow.classList.toggle('open', !festCollapsed[fn]); }
+}
+
+function toggleSec(fn, sn){
+  var k = fn+'::'+sn;
+  festSecCollapsed[k] = !festSecCollapsed[k];
+  var safeK = (fn+sn).replace(/[^a-z0-9]/gi,'_');
+  var body = document.getElementById('fsb-'+safeK);
+  var arrow = document.getElementById('fsa-'+safeK);
+  if(body){ body.classList.toggle('collapsed', festSecCollapsed[k]); }
+  if(arrow){ arrow.classList.toggle('open', !festSecCollapsed[k]); }
+}
 
 function renderFest(){
   var q = (document.getElementById('festSrch').value || '').toLowerCase().trim();
+  // 검색 중이면 모든 영화제·섹션 강제 펼침
+  if(q){
+    Object.keys(FESTIVALS).forEach(function(fn){ festCollapsed[fn] = false; });
+    Object.keys(festSecCollapsed).forEach(function(k){ festSecCollapsed[k] = false; });
+  }
   var body = document.getElementById('festBody');
   var festNames = Object.keys(FESTIVALS);
 
@@ -870,7 +924,7 @@ function renderFest(){
   if(legend && festNames.length > 1){
     legend.innerHTML = festNames.map(function(fn){
       var on = festActiveFest === fn;
-      return '<span class="fest-legend-chip'+(on?' on':'')+'" onclick="setFestFilter(\''+fn.replace(/'/g,'')+'\')">'
+      return '<span class="fest-legend-chip'+(on?' on':'')+'" onclick="setFestFilter(\''+fn.replace(/'/g,'\\\'')+'\')">'
         +(FESTIVALS[fn].festId||fn)+'</span>';
     }).join('');
   } else if(legend){ legend.innerHTML=''; }
@@ -883,6 +937,8 @@ function renderFest(){
     var fest = FESTIVALS[fn];
     var sectNames = Object.keys(fest.sections || {});
     var festHtml = '';
+    var festTotal = 0;
+
     sectNames.forEach(function(sn){
       var sec = fest.sections[sn];
       var films = (sec.films || []).filter(function(f){
@@ -891,30 +947,60 @@ function renderFest(){
       });
       if(!films.length) return;
       totalShown += films.length;
+      festTotal += films.length;
+
       var filmCards = films.map(function(f){
+        var display = f.title || f.titleEn || '';
+        var sub = (f.title && f.titleEn) ? f.titleEn : '';
         var titleLine = f.link
-          ? '<a href="'+f.link+'" target="_blank" rel="noopener">'+f.titleEn+' <span style="font-size:10px;color:var(--text3);">↗</span></a>'
-          : f.titleEn;
+          ? '<a href="'+f.link+'" target="_blank" rel="noopener">'+display+' <span style="font-size:10px;color:var(--text3);">↗</span></a>'
+          : display;
         return '<div class="fest-film">'
           +'<div class="fest-film-title">'+titleLine+'</div>'
-          +(f.title ? '<div class="fest-film-title-ko">'+f.title+'</div>' : '')
-          +'<div class="fest-film-dir">'
-            +(f.dirEn||'')
-            +(f.dirKo ? ' <span class="dko">/ '+f.dirKo+'</span>' : '')
-          +'</div>'
+          +(sub ? '<div class="fest-film-title-ko">'+sub+'</div>' : '')
+          +'<div class="fest-film-dir">'+(f.dirEn||'')+(f.dirKo?' <span class="dko">/ '+f.dirKo+'</span>':'')+'</div>'
           +(f.country ? '<span class="fest-film-country">'+f.country+'</span>' : '')
           +'</div>';
       }).join('');
+
       var secType = sec.sectionType && sec.sectionType !== sn ? sec.sectionType : '';
+      var k = fn+'::'+sn;
+      var safeK = (fn+sn).replace(/[^a-z0-9]/gi,'_');
+      if(festSecCollapsed[k] === undefined) festSecCollapsed[k] = true; // 기본 접힘
+      var secOpen = !festSecCollapsed[k];
+      var safeFn = fn.replace(/'/g,'\\\''), safeSn = sn.replace(/'/g,'\\\'');
+
       festHtml += '<div class="fest-section">'
-        +'<div class="fest-sec-name">'+sn+(secType?'<span class="fest-sec-badge">'+secType+'</span>':'')+'</div>'
-        +'<div class="fest-grid">'+filmCards+'</div>'
+        +'<div class="fest-sec-header" onclick="toggleSec(\''+safeFn+'\',\''+safeSn+'\')">'
+          +'<span class="fest-sec-name">'+sn+(secType?'<span class="fest-sec-badge">'+secType+'</span>':'')+'</span>'
+          +'<span class="fest-sec-cnt">'+films.length+'편</span>'
+          +'<span class="fest-sec-toggle'+(secOpen?' open':'')+'" id="fsa-'+safeK+'">▼</span>'
+        +'</div>'
+        +'<div class="fest-sec-body'+(secOpen?'':' collapsed')+'" id="fsb-'+safeK+'">'
+          +'<div class="fest-grid">'+filmCards+'</div>'
+        +'</div>'
         +'</div>';
     });
+
     if(festHtml){
-      html += '<div class="fest-festival fest-body">'
-        +'<div class="fest-fest-name">'+fn+' <span style="font-size:13px;font-weight:400;color:var(--text3);">('+fest.festId+')</span></div>'
-        + festHtml
+      var festKey = fn.replace(/[^a-z0-9]/gi,'_');
+      if(festCollapsed[fn] === undefined) festCollapsed[fn] = true; // 기본 접힘
+      var festOpen = !festCollapsed[fn];
+      var safeFn = fn.replace(/'/g,'\\\'');
+      html += '<div class="fest-festival">'
+        +'<div class="fest-fest-header" onclick="toggleFest(\''+safeFn+'\')">'
+          +'<div>'
+            +'<span class="fest-fest-name">'+fn+'</span>'
+            +(fest.festId ? '<span class="fest-fest-meta">'+fest.festId+'</span>' : '')
+          +'</div>'
+          +'<div style="display:flex;align-items:center;gap:8px;">'
+            +'<span style="font-size:11px;color:rgba(255,255,255,.3);">'+festTotal+'편</span>'
+            +'<span class="fest-fest-toggle'+(festOpen?' open':'')+'" id="ffa-'+festKey+'">▼</span>'
+          +'</div>'
+        +'</div>'
+        +'<div class="fest-fest-body'+(festOpen?'':' collapsed')+'" id="ffb-'+festKey+'">'
+          +festHtml
+        +'</div>'
         +'</div>';
     }
   });
