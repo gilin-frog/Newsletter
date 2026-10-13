@@ -890,32 +890,22 @@ var festActiveFest = '';   // '' = 전체
 var festCollapsed = {};    // { festKey: true/false }  — 영화제 접힘 상태
 var festSecCollapsed = {}; // { festKey+'::'+secName: true/false } — 섹션 접힘 상태
 
-function toggleFest(fn){
-  festCollapsed[fn] = !festCollapsed[fn];
-  var key = fn.replace(/[^a-z0-9]/gi,'_');
-  var body = document.getElementById('ffb-'+key);
-  var arrow = document.getElementById('ffa-'+key);
-  if(body){ body.classList.toggle('collapsed', festCollapsed[fn]); }
-  if(arrow){ arrow.classList.toggle('open', !festCollapsed[fn]); }
+function toggleFest(key){
+  var collapsed = document.getElementById('ffb-'+key).classList.contains('collapsed');
+  document.getElementById('ffb-'+key).classList.toggle('collapsed', !collapsed);
+  document.getElementById('ffa-'+key).classList.toggle('open', !collapsed);
 }
 
-function toggleSec(fn, sn){
-  var k = fn+'::'+sn;
-  festSecCollapsed[k] = !festSecCollapsed[k];
-  var safeK = (fn+sn).replace(/[^a-z0-9]/gi,'_');
-  var body = document.getElementById('fsb-'+safeK);
-  var arrow = document.getElementById('fsa-'+safeK);
-  if(body){ body.classList.toggle('collapsed', festSecCollapsed[k]); }
-  if(arrow){ arrow.classList.toggle('open', !festSecCollapsed[k]); }
+function toggleSec(key){
+  var collapsed = document.getElementById('fsb-'+key).classList.contains('collapsed');
+  document.getElementById('fsb-'+key).classList.toggle('collapsed', !collapsed);
+  document.getElementById('fsa-'+key).classList.toggle('open', !collapsed);
 }
 
 function renderFest(){
   var q = (document.getElementById('festSrch').value || '').toLowerCase().trim();
-  // 검색 중이면 모든 영화제·섹션 강제 펼침
-  if(q){
-    Object.keys(FESTIVALS).forEach(function(fn){ festCollapsed[fn] = false; });
-    Object.keys(festSecCollapsed).forEach(function(k){ festSecCollapsed[k] = false; });
-  }
+  // 검색 중이면 렌더 후 모든 영화제·섹션 강제 펼침 (DOM 갱신 후 처리)
+  var _expandAll = !!q;
   var body = document.getElementById('festBody');
   var festNames = Object.keys(FESTIVALS);
 
@@ -964,41 +954,34 @@ function renderFest(){
       }).join('');
 
       var secType = sec.sectionType && sec.sectionType !== sn ? sec.sectionType : '';
-      var k = fn+'::'+sn;
       var safeK = (fn+sn).replace(/[^a-z0-9]/gi,'_');
-      if(festSecCollapsed[k] === undefined) festSecCollapsed[k] = true; // 기본 접힘
-      var secOpen = !festSecCollapsed[k];
-      var safeFn = fn.replace(/'/g,'\\\''), safeSn = sn.replace(/'/g,'\\\'');
-
+      // 기본 접힘
       festHtml += '<div class="fest-section">'
-        +'<div class="fest-sec-header" onclick="toggleSec(\''+safeFn+'\',\''+safeSn+'\')">'
+        +'<div class="fest-sec-header" onclick="toggleSec(\''+safeK+'\')">'
           +'<span class="fest-sec-name">'+sn+(secType?'<span class="fest-sec-badge">'+secType+'</span>':'')+'</span>'
           +'<span class="fest-sec-cnt">'+films.length+'편</span>'
-          +'<span class="fest-sec-toggle'+(secOpen?' open':'')+'" id="fsa-'+safeK+'">▼</span>'
+          +'<span class="fest-sec-toggle" id="fsa-'+safeK+'">▼</span>'
         +'</div>'
-        +'<div class="fest-sec-body'+(secOpen?'':' collapsed')+'" id="fsb-'+safeK+'">'
+        +'<div class="fest-sec-body collapsed" id="fsb-'+safeK+'">'
           +'<div class="fest-grid">'+filmCards+'</div>'
         +'</div>'
         +'</div>';
     });
 
     if(festHtml){
-      var festKey = fn.replace(/[^a-z0-9]/gi,'_');
-      if(festCollapsed[fn] === undefined) festCollapsed[fn] = true; // 기본 접힘
-      var festOpen = !festCollapsed[fn];
-      var safeFn = fn.replace(/'/g,'\\\'');
+      var festKey = (fest.festId || fn).replace(/[^a-z0-9]/gi,'_');
       html += '<div class="fest-festival">'
-        +'<div class="fest-fest-header" onclick="toggleFest(\''+safeFn+'\')">'
+        +'<div class="fest-fest-header" onclick="toggleFest(\''+festKey+'\')">'
           +'<div>'
             +'<span class="fest-fest-name">'+fn+'</span>'
             +(fest.festId ? '<span class="fest-fest-meta">'+fest.festId+'</span>' : '')
           +'</div>'
           +'<div style="display:flex;align-items:center;gap:8px;">'
             +'<span style="font-size:11px;color:rgba(255,255,255,.3);">'+festTotal+'편</span>'
-            +'<span class="fest-fest-toggle'+(festOpen?' open':'')+'" id="ffa-'+festKey+'">▼</span>'
+            +'<span class="fest-fest-toggle" id="ffa-'+festKey+'">▼</span>'
           +'</div>'
         +'</div>'
-        +'<div class="fest-fest-body'+(festOpen?'':' collapsed')+'" id="ffb-'+festKey+'">'
+        +'<div class="fest-fest-body collapsed" id="ffb-'+festKey+'">'
           +festHtml
         +'</div>'
         +'</div>';
@@ -1007,6 +990,11 @@ function renderFest(){
 
   if(!html) html = '<div class="fest-empty">'+(festNames.length ? '검색 결과가 없습니다.' : '영화제 데이터를 로딩 중입니다…')+'</div>';
   body.innerHTML = html;
+  // 검색 중이면 모두 펼치기
+  if(_expandAll){
+    body.querySelectorAll('.fest-fest-body,.fest-sec-body').forEach(function(el){ el.classList.remove('collapsed'); });
+    body.querySelectorAll('.fest-fest-toggle,.fest-sec-toggle').forEach(function(el){ el.classList.add('open'); });
+  }
   var cnt = document.getElementById('festCnt');
   if(cnt) cnt.textContent = totalShown + '편' + (q ? ' (검색 결과)' : '');
 }
